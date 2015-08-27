@@ -1,0 +1,28 @@
+<section class="central" ng-controller="FixtureController">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4>Fixture - Liga: <b>{{league}}</b> / Edición <b>{{edition.id}}</b></h4>
+        </div>
+        
+        <!-- Table -->
+        <div class="width50 marginAuto">
+            <table class="table" ng-repeat="item in fixture">
+                <tbody>
+                    <tr>
+                        <th colspan="6">Fecha {{$index+1}}</th>
+                    </tr>
+                    <tr ng-repeat="game in item.games" class="alignCenter">
+                        <td class="width30">
+                            {{game.home}}
+                        </td>
+                        <td ng-if="game.homeGoals && game.awayGoals">{{game.homeGoals}} - {{game.awayGoals}}</td>
+                        <td ng-if="!(game.homeGoals && game.awayGoals)" class="width30">vs.</td>
+                        <td class="width30">
+                            {{game.away}}
+                        </td>  
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

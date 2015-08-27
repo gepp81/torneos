@@ -1,0 +1,49 @@
+<section class="central" ng-controller="EditionController">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4>Listado de Ediciones para {{item.name}}</h4>
+        </div>
+        
+        <!-- Table -->
+        <div>
+            <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#removeModal" ng-click="addEdition(item)">
+                Nueva Edición
+            </button>
+            <table class="table">
+                <thead>
+                    <th class="width50">Id</th>
+                    <th>Equipos</th>
+                    <th>Fixture</th>
+                    <th>Eliminar</span></th>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in editions">
+                        <td class="paddingLeftOnePercent">{{item.id}}</td>
+                        <td>
+                            {{item.teams}}
+                        </td>
+                        <td>
+                            <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#removeModal" 
+                                    ng-click="getFixture(item)">
+                                Ver Fix
+                            </button>
+                        </td>                        
+                        <td>
+                            <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#removeModal" ng-click="remove(item)">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="text-align: center">
+                <pagination class="pagination" total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" 
+                        previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último"></pagination>
+                <div>
+                    <span nf-if="totalItems > 0">{{getPaginationInfo()}}</span>                
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

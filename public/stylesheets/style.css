@@ -1,0 +1,77 @@
+body {
+    padding: 0.5%;
+}
+
+/** Bibliografia **/
+
+.bibliography-download {
+    width: 1.4em;
+    height: 1.4em;
+}
+
+/** Auth **/
+
+.autentificationForm {
+    width: 35%;
+    margin: auto;
+    margin-top: 10%;
+}
+
+.autentificationForm .input-group {
+    margin-top: 5%;
+}
+
+/**
+ * Dependencies View
+ */
+
+.alertDependencies {
+    margin: auto;
+    width: 95%;
+    margin-top: 1%;
+}
+
+/** Widths **/
+
+.width100 {
+    width: 100%;
+}
+
+.width70 {
+    width: 70%;
+}
+
+.width50 {
+    width: 50%;
+}
+
+.width30 {
+    width: 30%;
+}
+
+/** Margin y padding **/
+
+.paddingLeftOnePercent {
+    padding-left: 2%!important;
+}
+
+.alignRight {
+    text-align: right;
+}
+
+.alignCenter {
+    text-align: center;
+}
+
+.marginAuto {
+    margin: 0 auto;
+}
+
+.modal {
+    margin-top: 15%;
+}
+
+.central {
+    width: 80%;
+    margin: auto;
+}

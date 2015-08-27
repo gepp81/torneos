@@ -1,0 +1,57 @@
+<section class="central" ng-controller="TeamController">
+    <h3>
+        Listado de Equipos
+    </h3>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4>Búsqueda de Equipos</h4>
+            <div class="input-group width70">
+                <span class="input-group-btn">
+                    <input name="nameSearch" type="text" class="form-control"/>
+                    <button class="btn btn-primary" type="button" ng-click="search()"> 
+                        &nbsp;Buscar&nbsp;</button>
+                    <button class="btn btn-info" type="button" ng-click="open('lg', null)"> 
+                        &nbsp;Nuevo&nbsp;</button>                    
+                </span>
+            </div>
+        </div>
+        
+        <!-- Table -->
+        <div>
+            <table class="table">
+                <thead>
+                    <th class="width50">Nombre</th>
+                    <th>Habilidades</th>
+                    <th>Editar</span></th>
+                    <th>Eliminar</span></th>
+                </thead>
+                <tbody>
+                    <!--tr ng-repeat="item in dependenciesList | filter: {id:searchProcess}"-->
+                    <tr ng-repeat="item in teams">
+                        <td class="paddingLeftOnePercent">{{item.name}}</td>
+                        <td class="paddingLeftOnePercent">{{item.skill}}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal"  
+                                    ng-click="open('lg', item)">
+                                Editar
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#removeModal" ng-click="remove(item)">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="text-align: center">
+                <pagination class="pagination" total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" 
+                        previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último"></pagination>
+                <div>
+                    <span nf-if="totalItems > 0">{{getPaginationInfo()}}</span>                
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

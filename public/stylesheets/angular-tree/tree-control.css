@@ -1,0 +1,83 @@
+treecontrol {
+    /* prevent user selection */
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    /* default */
+    font-family: "Lucida Grande", Helvetica, Verdana, Arial, sans-serif;
+    font-size: 1em;
+    color: #555;
+    text-decoration: none;
+}
+
+treecontrol ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: none;
+    overflow: hidden;
+}
+
+treecontrol li {
+    position: relative;
+    padding: 0 0 0 2.5em;
+    line-height: 2.2em;
+}
+
+treecontrol li.tree-expanded i.tree-leaf-head,
+treecontrol li.tree-collapsed i.tree-leaf-head {
+    display: none;
+}
+
+treecontrol li.tree-expanded i.tree-branch-head,
+treecontrol li.tree-collapsed i.tree-branch-head {
+    display: inline;
+}
+
+treecontrol li.tree-leaf i.tree-branch-head {
+    display: none;
+}
+
+treecontrol li.tree-leaf i.tree-leaf-head {
+    display: inline;
+}
+
+treecontrol li i.tree-branch-head {
+    cursor: pointer;
+}
+
+treecontrol li .tree-label {
+    display: inline;
+    padding-left: 0.5em;
+}
+
+treecontrol.tree-classic li.tree-expanded i.tree-branch-head {
+    padding: 0.2em 0.9em;
+    background-image: url("../../images/redOpenFolder.png");
+    background-size: cover;
+}
+
+treecontrol.tree-classic li.tree-collapsed i.tree-branch-head {
+    padding: 0.2em 0.9em;
+    background-image: url("/../../images/redFolderClose.png");
+    background-size: cover;
+}
+
+treecontrol.tree-classic i.application-pdf {
+    padding: 0.2em 0.9em;
+    background-image: url("../../images/application-pdf.png");
+    background-size: cover;
+}
+
+treecontrol.tree-classic i.application-msword {
+    padding: 0.2em 0.9em;
+    background-image: url("../../images/application-msword.png");
+    background-size: cover;
+}
+
+treecontrol.tree-classic li .tree-selected {
+    background-color: #aaddff;
+    font-weight: bold;
+}
