@@ -36,6 +36,16 @@ router.post('/application', function(req, res, next) {
     });
 });
 
+router.get('/application', function(req, res, next) {
+    req.models.Application.get(1, function(err, appDb) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.status(200).send(appDb);
+        }
+    });
+});
+
 router.post('/team', routesTeam.create);
 router.put('/team', routesTeam.update);
 router.get('/team', routesTeam.getAllTeams);
@@ -52,7 +62,8 @@ router.post('/edition', routesTournament.addEdition);
 router.get('/edition/:tournament', routesTournament.getEditions);
 router.get('/fixture/:edition', routesTournament.getFixture);
 
-router.get('/season/:page', routesSeason.getSeason);
+router.get('/seasons/:page', routesSeason.getSeason);
+router.get('/season/:id', routesSeason.get);
 router.post('/season', routesSeason.createSeason);
 
 module.exports = router;

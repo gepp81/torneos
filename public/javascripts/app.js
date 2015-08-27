@@ -11,6 +11,10 @@ var app = angular.module('Torneos', ['ngResource', 'ui.router', 'ui.bootstrap'])
                 url: "/teams",
                 templateUrl: "views/team/list.html"
             })
+            .state("play", {
+                url: "/play",
+                templateUrl: "views/season/play.html"
+            })        
             .state("error", {
                 url: "/error",
                 templateUrl: "views/error.html"
@@ -59,6 +63,7 @@ app
     .factory("Tournament", TournamentResource)
     .factory("Seasons", SeasonsResource)
     .factory("Season", SeasonResource)
+    .factory("SeasonTournament", SeasonTournamentResource)
     .factory("Edition", EditionResource)
     .factory("Fixture", FixtureResource)
     .factory("Application", ApplicationResource)
@@ -72,4 +77,5 @@ app
     .controller("FixtureController", FixtureController)
     .controller("SeasonController", SeasonController)
     .controller("SeasonNewController", SeasonNewController)
+    .controller("SeasonPlayController", SeasonPlayController)
     .controller("TeamSaveController", TeamSaveController);

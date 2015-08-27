@@ -1,5 +1,5 @@
 function SeasonsResource($resource) {
-    return $resource("/season/:page", {}, {
+    return $resource("/seasons/:page", {}, {
         getAll: {
             method: 'GET',
             isArray: 'true'
@@ -13,12 +13,23 @@ function SeasonsResource($resource) {
     });
 };
 
-function SeasonResource($resource) {
+function SeasonTournamentResource($resource) {
     return $resource("/season/:tournaments", {}, {
         create: {
             method: 'POST',
             data: {
                 tournaments: "@tournaments"
+            }
+        }
+    });
+};
+
+function SeasonResource($resource) {
+    return $resource("/season/:id", {}, {
+        get: {
+            method: 'get',
+            params: {
+                id: "@id"
             }
         }
     });

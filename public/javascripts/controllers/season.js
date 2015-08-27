@@ -23,18 +23,19 @@ function SeasonController($scope, $modal, $state, Seasons, Application) {
     $scope.newSeason = function() {
         $state.go('newSeason');
     }
-    
+
     $scope.setDefault = function(item) {
-        Application.save({season: item}
-         , function(data) {
-           
+        Application.save({
+            season: item
+        }, function(data) {
+
         }, function(error) {
-         
+
         });
     }
 }
 
-function SeasonNewController($scope, $modal, $state, $stateParams, Season, Tournaments) {
+function SeasonNewController($scope, $modal, $state, $stateParams, SeasonTournament, Tournaments) {
 
     $scope.selectedItems = [];
 
@@ -43,7 +44,7 @@ function SeasonNewController($scope, $modal, $state, $stateParams, Season, Tourn
     }
 
     $scope.save = function() {
-        Season.create({
+        SeasonTournament.create({
                 tournaments: $scope.selectedItems
             },
             function(data) {
@@ -75,5 +76,30 @@ function SeasonNewController($scope, $modal, $state, $stateParams, Season, Tourn
     }, function(error) {
         console.error("No recupero datos");
     });
+
+}
+
+function SeasonPlayController($scope, $modal, $state, Season, Application) {
+
+    var getSeason = function() {
+        Application.get({},
+            function(data) {
+                $scope.season = data;
+                Season.get({
+                        id: data.season
+                    },
+                    function(data) {
+                        $scope.season = data;
+                    },
+                    function(err) {
+
+                    });
+            },
+            function(err) {
+
+            });
+    }
+
+    getSeason();
 
 }

@@ -39,6 +39,16 @@ exports.getSeason = function(req, res, next) {
         });
 };
 
+exports.get = function(req, res, next) {
+    req.models.Season.get(req.params.id, function(err, season) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.status(200).send(season);
+        }
+    });
+};
+
 exports.createSeason = function(req, res, next) {
     var tournaments = req.body.tournaments;
     if (tournaments) {
@@ -68,7 +78,7 @@ exports.createSeason = function(req, res, next) {
                     var max = 0;
                     for (var i in configs) {
                         var item = configs[i];
-                        max = max < item.size? item.size : max;
+                        max = max < item.size ? item.size : max;
                     }
                     season.size = max;
                     req.models.Season.create(season, function(err, seasonDb) {

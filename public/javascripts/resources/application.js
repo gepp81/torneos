@@ -5,6 +5,9 @@ function ApplicationResource($resource) {
             data: {
                 season: "@season"
             }
+        },
+        get: {
+            method: 'GET'
         }
     });
 };
