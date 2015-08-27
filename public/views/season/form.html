@@ -1,0 +1,44 @@
+<div class="panel panel-default" ng-controller="SeasonNewController">
+    <div class="panel-heading">
+        <h4>Crear Temporada</h4>
+    </div>
+    <div class="dependencyForm">
+        <form ng-submit="" method="post" name="editSeason" novalidate>
+            <div class="width50 marginAuto">
+                <br/>
+                    <div class="input-group">
+                        <span class="input-group-addon" id="basic-addon1">
+                            Agregar
+                        </span>
+                        <input type="text" ng-model="tournamentSelected" 
+                               typeahead="tournament.name for tournament in tournaments | filter:$viewValue | limitTo:8"
+                               class="form-control" typeahead-on-select="addToList(tournamentSelected)">
+                    </div>
+                    
+                    <h4>Torneos Agregados</h4>
+                    <table>
+                        <tr ng-repeat="item in selectedItems">
+                            <td>{{item}}</td>
+                            <td>
+                                <button type="submit" class="btn btn-danger btn-sm" ng-click="remover(item)">
+                                    Remover
+                                </button>                              
+                            </td>
+                        </tr>
+                    </table>
+
+                <input type="hidden" class="form-control" name="id" ng-model="team.id" aria-describedby="basic-addon1">        
+                <br/>
+                <div class="input-group width100 alignCenter">
+                    <button type="submit" class="btn btn-warning width30" ng-click="cancel()">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-info width30" ng-click="save()" 
+                            ng-disabled="editSeason.$invalid">
+                        Guardar
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

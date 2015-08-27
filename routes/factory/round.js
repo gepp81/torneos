@@ -19,9 +19,13 @@ module.exports = function RoundFactory(edition, double) {
             var second = [];
             if (this.double) {
                 second = get4Fixture(this.edition, changeTeamsPosition(this.teams));
-
             }
-            return first.concat(second);
+            var finalFix = first.concat(second);
+            for (var i = 0; i < finalFix.length; i++) {
+                var elem = finalFix[i];
+                elem.number = i + 1;
+            }
+            return finalFix;
         }
     }
 

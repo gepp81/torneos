@@ -16,7 +16,10 @@ module.exports = function(db, models) {
     models.Edition = db.define("edition", {
         id: 'serial',
         league: 'integer',
-        teams: Object
+        leagueName: 'text',
+        teams: Object,
+        size: 'integer',
+        playing: 'integer'
     });
 
     models.Game = db.define('game', {
@@ -36,6 +39,7 @@ module.exports = function(db, models) {
     models.Round = db.define('round', {
         id: 'serial',
         edition: 'integer',
+        number: 'integer'
     });
 
     models.Round.hasMany('games', models.Game, {}, {
@@ -66,9 +70,15 @@ module.exports = function(db, models) {
             values: ["Sin Empezar", "Jugando", "Finalizada"],
             defaultValue: "Sin Empezar"
         },
+        size: 'integer',
+        week: 'integer',
         editions: Object
-    })
+    });
 
+    models.Application = db.define("application", {
+        season: 'integer'
+    });
+    
     // Sincronize db ONLY FOR FIRST
     /*db.drop(function() {
         // dropped all tables from defined models (Person and Pet)

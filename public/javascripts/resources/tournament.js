@@ -1,10 +1,14 @@
 function TournamentsResource($resource) {
-    return $resource("/tournament/getAll/:page", {}, {
+    return $resource("/tournaments/getAll/:page", {}, {
         getAll: {
             method: 'GET',
             params: {
                 page: "@page"
             }
+        },
+        get: {
+            method: 'GET',
+            isArray: 'true'
         }
     });
 };

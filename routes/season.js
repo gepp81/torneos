@@ -1,35 +1,94 @@
 var LIMIT = 20;
-var ORDER = 'name';
-var RoundFactory = require("./factory/round.js");
+var ORDER = '-id'
 var async = require('async');
 
-exports.create = function(req, res, next) {
-    var tournament = req.body.tournament;
-    if (tournament) {
-        var error = false;
-        if (!tournament.name) {
-            error = true;
-        }
-        if (!error) {
-            tournament.editionPlayed = 0;
-            req.models.Tournament.create(tournament, function(err, tournamentDb) {
-                if (err) {
-                    res.status(500).send(err);
+exports.getSeason = function(req, res, next) {
+    async.parallel({
+            seasons: function(callback) {
+                var page = 1;
+                if (req.params.page) {
+                    page = req.params.page;
                 }
-                res.status(200).send(tournamentDb);
-            });
-        } else {
-            res.status(500).send("errorrrr");
-        }
-    } else {
-        res.status(500).send("errorrrr pq no definio un tournament");
-    }
+                page = (page - 1) * LIMIT;
+                req.models.Season.find().order(ORDER).limit(LIMIT).offset(page).run(function(err, seasons) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    callback(null, seasons);
+                });
+            },
+            total: function(callback) {
+                req.models.Season.count(function(err, totalItems) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    callback(null, totalItems);
+                });
+            }
+        },
+        function(err, results) {
+            if (err) {
+                res.status(500).send({
+                    error: 'Cant get items.'
+                });
+            } else {
+                res.status(200).send(results);
+            }
+        });
 };
 
+exports.createSeason = function(req, res, next) {
+    var tournaments = req.body.tournaments;
+    if (tournaments) {
+
+        var configs = {};
+
+        async.forEachOf(tournaments, function(value, key, callback) {
+                req.models.Edition.find({
+                    leagueName: value
+                }).order(ORDER).limit(1).run(function(err, editionDb) {
+                    if (err) return callback(err);
+                    configs[value] = {
+                        id: editionDb[0].id,
+                        size: editionDb[0].size
+                    };
+                    callback();
+                })
+            },
+            function(err) {
+                if (err) {
+                    req.status(500).send(err);
+                } else {
+                    var season = {
+                        editions: configs,
+                        week: 1
+                    };
+                    var max = 0;
+                    for (var i in configs) {
+                        var item = configs[i];
+                        max = max < item.size? item.size : max;
+                    }
+                    season.size = max;
+                    req.models.Season.create(season, function(err, seasonDb) {
+                        if (err) {
+                            res.status(500).send(err);
+                        } else {
+                            res.status(200).send(err);
+                        }
+                    });
+                }
+
+            })
+    }
+}
+
+/*
 exports.get = function(req, res, next) {
     req.models.Tournament.get(req.params.id, function(err, tournamentDb) {
         if (err) {
-            res.status(500).send("error pq no definio un tournament");
+            res.status(500).send("errorrrr pq no definio un tournament");
         } else {
             res.status(200).send(tournamentDb);
         }
@@ -37,16 +96,6 @@ exports.get = function(req, res, next) {
 };
 
 exports.getAll = function(req, res, next) {
-    req.models.Tournament.find().order(ORDER).run(function(err, tournaments) {
-        if (err) {
-            res.status(500).send(err);
-        } else {
-            res.status(200).send(tournaments);
-        }
-    });
-};
-
-exports.getAllPage = function(req, res, next) {
     var page = 1;
     if (req.params.page) {
         page = req.params.page;
@@ -54,7 +103,7 @@ exports.getAllPage = function(req, res, next) {
     page = (page - 1) * LIMIT;
     req.models.Tournament.find().order(ORDER).limit(LIMIT).offset(page).run(function(err, tournaments) {
         if (err) {
-            res.status(500).send("error pq no definio un tournament");
+            res.status(500).send("errorrrr pq no definio un tournament");
         } else {
             res.status(200).send({
                 tournaments: tournaments,
@@ -104,6 +153,7 @@ function setupEdition(req, res, tournamentDb, editionDb) {
                         if (err) {
                             callback(err);
                         } else {
+                            console.log(itemDb);
                             callback(null, true);
                         }
                     });
@@ -145,9 +195,6 @@ exports.addEdition = function(req, res, next) {
             res.status(500).send("errorrrr pq no definio un tournament");
         } else {
             edition.league = tournamentDb.id;
-            edition.leagueName = tournamentDb.name;
-            edition.size = (edition.teams.length - 1) * 2; //if league
-            edition.playing = 1;
             req.models.Edition.create(edition, function(err, editionDb) {
                 if (err) {
                     res.status(500).send({
@@ -183,4 +230,4 @@ exports.getFixture = function(req, res, next) {
             res.status(200).send(rounds);
         }
     })
-}
+}*/

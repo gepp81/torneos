@@ -1,0 +1,55 @@
+<section class="central" ng-controller="SeasonController">
+    <h3>
+        Listado de Temporadas
+    </h3>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="input-group width70">
+                    <button class="btn btn-info" type="button" ng-click="newSeason()"> 
+                        &nbsp;Nuevo&nbsp;</button>                    
+                </span>
+            </div>
+        </div>
+        <!-- Table -->
+        <div>
+            <table class="table">
+                <thead>
+                    <th class="width50">Temporada</th>
+                    <th>Estado</span></th>
+                    <th></span></th>            
+                    <th>Editar</span></th>
+                    <th>Eliminar</span></th>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in seasons">
+                        <td class="paddingLeftOnePercent">{{item.id}}</td>
+                        <td class="paddingLeftOnePercent">{{item.status}}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal" 
+                                    ng-click="setDefault(item)" ng-click="">
+                                Iniciar
+                            </button>
+                        </td>                        
+                        <td>
+                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal"  
+                                    ng-click="">Editar
+                            </button>
+                        </td>
+                        <td>
+                            <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#removeModal" ng-click="">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="text-align: center">
+                <pagination class="pagination" total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" 
+                        previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último"></pagination>
+                <div>
+                    <span nf-if="totalItems > 0">{{getPaginationInfo()}}</span>                
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
