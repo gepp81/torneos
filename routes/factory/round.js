@@ -50,7 +50,7 @@ module.exports = function RoundFactory(edition, double) {
     function get4Fixture(edition, teams) {
         var fix = new Array();
         fix.push(get4Round(edition, teams[0], teams[1], teams[2], teams[3]));
-        fix.push(get4Round(edition, teams[0], teams[2], teams[1], teams[3]));
+        fix.push(get4Round(edition, teams[0], teams[2], teams[3], teams[1]));
         fix.push(get4Round(edition, teams[3], teams[0], teams[1], teams[2]));
         return fix;
     }

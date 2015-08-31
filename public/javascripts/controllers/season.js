@@ -79,7 +79,22 @@ function SeasonNewController($scope, $modal, $state, $stateParams, SeasonTournam
 
 }
 
-function SeasonPlayController($scope, $modal, $state, Season, Application) {
+function SeasonPlayController($scope, $modal, $state, Season, Application, Round, Game) {
+
+    var getRound = function(editions, week) {
+        Round.getRound({
+            editions: editions,
+            week: week
+        }, function(data) {
+            $scope.rounds = data;
+        }, function(err) {
+
+        });
+    }
+
+    $scope.weekChanged = function() {
+        getRound($scope.editions, $scope.weekPagination);
+    }
 
     var getSeason = function() {
         Application.get({},
@@ -89,7 +104,10 @@ function SeasonPlayController($scope, $modal, $state, Season, Application) {
                         id: data.season
                     },
                     function(data) {
-                        $scope.season = data;
+                        $scope.editions = data.editions;
+                        $scope.size = data.size;
+                        $scope.weekPagination = data.week;
+                        getRound(data.editions, data.week);
                     },
                     function(err) {
 
@@ -98,6 +116,19 @@ function SeasonPlayController($scope, $modal, $state, Season, Application) {
             function(err) {
 
             });
+    }
+
+    $scope.playGames = function(games) {
+        for (var game in games) {
+            Game.play({
+                id: games[game].id
+            }, function(data) {
+                game.homeGoals = data.homeGoals;
+                game.awayGoals = data.awayGoals;
+            }, function(err) {
+
+            });
+        }
     }
 
     getSeason();

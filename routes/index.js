@@ -65,5 +65,7 @@ router.get('/fixture/:edition', routesTournament.getFixture);
 router.get('/seasons/:page', routesSeason.getSeason);
 router.get('/season/:id', routesSeason.get);
 router.post('/season', routesSeason.createSeason);
+router.post('/round', routesSeason.getRound);
+router.post('/game', routesSeason.playGame);
 
 module.exports = router;

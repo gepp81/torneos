@@ -71,3 +71,15 @@ function FixtureResource($resource) {
         }
     });
 };
+
+function RoundResource($resource) {
+    return $resource("/round/:editions/:week", {}, {
+        getRound: {
+            method: 'POST',
+            data: {
+                edition: "@edition",
+                week: "@week"
+            }
+        }
+    });
+};

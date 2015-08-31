@@ -67,6 +67,8 @@ app
     .factory("Edition", EditionResource)
     .factory("Fixture", FixtureResource)
     .factory("Application", ApplicationResource)
+    .factory("Round", RoundResource)
+    .factory("Game", GameResource)
     .factory("TournamentSave", TournamentSaveResource);
 
 app

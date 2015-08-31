@@ -34,3 +34,14 @@ function SeasonResource($resource) {
         }
     });
 };
+
+function GameResource($resource) {
+    return $resource("/game/:id", {}, {
+        play: {
+            method: 'post',
+            data: {
+                id: "@id"
+            }
+        }
+    });
+};

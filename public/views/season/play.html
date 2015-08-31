@@ -3,14 +3,37 @@
         <h4>Temporada en Juego</h4>
     </div>
     <div class="dependencyForm">
-        <div class="input-group width100 alignCenter">
-            <button type="submit" class="btn btn-warning width30" ng-click="">
-                Anterior
-            </button>
-            <button type="submit" class="btn btn-info width30" ng-click="" >
-                Siguiente
-            </button>
-        </div>
 
+        <!-- Table -->
+        <div>
+            <div style="text-align: center">
+                <pagination class="pagination" total-items="size" items-per-page="1" ng-model="weekPagination" ng-change="weekChanged()" 
+                            previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último">
+                </pagination>
+                <h4>Fecha {{weekPagination}}</h4>                
+            </div>
+
+            <accordion close-others="false">
+                <accordion-group ng-repeat="(key, value) in editions" >
+                    <accordion-heading>
+                        {{key}} > {{value.id}}
+                    </accordion-heading>
+                    <span ng-repeat="round in rounds[value.id]">
+                    <button ng-click="playGames(round.games)" class="btn btn-sm btn-info" >Jugar</button>
+                        <table class="table">
+                            <tr ng-repeat="game in round.games">
+                                <td style="width:45%; text-align:right" >{{game.home}}</td>
+                                <td style="width:5%;background-color: #eee; border: 1px solid #999; text-align: center;">
+                                    {{game.homeGoals}}
+                                </td>
+                                <td style="width:5%;background-color: #eee; border: 1px solid #999;text-align: center;">
+                                    {{game.awayGoals}}
+                                </td>
+                                <td style="width:45%; text-align:left" >{{game.away}}</td>
+                            </tr>
+                        </table>
+                    </span>
+                </accordion-group>
+            </accordion>
+        </div>
     </div>
-</div>
