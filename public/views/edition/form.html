@@ -18,9 +18,19 @@
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon" id="basic-addon1">
+                            Ida y Vuelta
+                        </span>
+                        
+                        <span class="form-control" >
+                            <input type="checkbox" ng-model="double"/>
+                        </span>
+                    </div>                  
+                    <div class="input-group">
+                        <span class="input-group-addon" id="basic-addon1">
                             Agregar
                         </span>
-                        <input type="text" ng-model="teamSelected" typeahead="team.name for team in teams | filter:$viewValue | limitTo:8"
+                        <input type="text" ng-model="teamSelected" 
+                               typeahead="team.name for team in teams | filter:$viewValue | limitTo:8"
                                class="form-control" typeahead-on-select="addToList(teamSelected)">
                     </div>
                     

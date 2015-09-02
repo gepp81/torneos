@@ -21,6 +21,17 @@ module.exports = function(db, models) {
         size: 'integer',
         playing: 'integer'
     });
+    
+    models.Position = db.define("position", {
+        edition: 'integer',
+        team: String,
+        games: 'integer',
+        win: 'integer',
+        tie: 'integer',
+        lose: 'integer',
+        goals: 'integer',
+        received: 'integer'
+    })
 
     models.Game = db.define('game', {
         id: 'serial',

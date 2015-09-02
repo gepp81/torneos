@@ -10,11 +10,14 @@
                 <pagination class="pagination" total-items="size" items-per-page="1" ng-model="weekPagination" ng-change="weekChanged()" 
                             previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último">
                 </pagination>
-                <h4>Fecha {{weekPagination}}</h4>                
+                <h4>Fecha {{weekPagination}} 
+                    <button ng-click="playWeek(rounds)" class="btn btn-sm btn-info" >Jugar</button>
+                </h4>
             </div>
 
             <accordion close-others="false">
-                <accordion-group ng-repeat="(key, value) in editions" >
+                <accordion-group ng-repeat="(key, value) in editions" is-open="true" 
+                                 ng-show="rounds[value.id].rounds.games.length > 0">
                     <accordion-heading>
                         {{key}} > {{value.id}}
                     </accordion-heading>

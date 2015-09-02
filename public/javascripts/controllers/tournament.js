@@ -89,6 +89,7 @@ function TournamentEditionController($scope, $state, $stateParams, Team, Edition
         var index = $scope.selectedItems.indexOf(item);
         if (index == -1) {
             $scope.selectedItems.push(item);
+            $scope.teamSelected = '';
         }
     }
 
@@ -125,7 +126,9 @@ function TournamentEditionController($scope, $state, $stateParams, Team, Edition
                 edition: {
                     teams: $scope.selectedItems,
                     size: $scope.selectedOption
-                }
+
+                },
+                double: $scope.double
             },
             function(data) {
                 $state.go('edition', {

@@ -36,11 +36,12 @@ function SeasonResource($resource) {
 };
 
 function GameResource($resource) {
-    return $resource("/game/:id", {}, {
+    return $resource("/game/:id/:edition", {}, {
         play: {
             method: 'post',
             data: {
-                id: "@id"
+                id: "@id",
+                edition: "@edition"
             }
         }
     });

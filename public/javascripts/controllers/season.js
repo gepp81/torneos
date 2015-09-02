@@ -119,16 +119,30 @@ function SeasonPlayController($scope, $modal, $state, Season, Application, Round
     }
 
     $scope.playGames = function(games) {
-        for (var game in games) {
+        angular.forEach(games, function(value, key) {
             Game.play({
-                id: games[game].id
+                id: games[key].id
             }, function(data) {
-                game.homeGoals = data.homeGoals;
-                game.awayGoals = data.awayGoals;
+                games[key] = data
             }, function(err) {
-
             });
-        }
+        });
+
+    }
+
+    $scope.playWeek = function(round) {
+        angular.forEach(round, function(eValue, eKey) {
+            angular.forEach(round[eKey].rounds.games, function(value, key) {
+                Game.play({
+                    id: round[eKey].rounds.games[key].id,
+                    edition: round[eKey].rounds.edition
+                }, function(data) {
+                    round[eKey].rounds.games[key] = data
+                }, function(err) {
+
+                });
+            });
+        });
     }
 
     getSeason();

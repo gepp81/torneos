@@ -95,9 +95,10 @@ exports.update = function(req, res, next) {
 }
 
 function setupEdition(req, res, tournamentDb, editionDb) {
+    var double = req.body.double ? true : false;
     async.parallel({
             one: function(callback) {
-                var factory = new RoundFactory(editionDb, true);
+                var factory = new RoundFactory(editionDb, double);
 
                 async.each(factory.getFixture(), function(item, callback) {
                     req.models.Round.create(item, function(err, itemDb) {
@@ -136,6 +137,24 @@ function setupEdition(req, res, tournamentDb, editionDb) {
         });
 }
 
+function createNewPosition(req, editionDb) {
+    for (var i = editionDb.teams.length - 1; i >= 0; i--) {
+        var position = {
+            edition: editionDb.id,
+            team: editionDb.teams[i],
+            games: 0,
+            win: 0,
+            tie: 0,
+            lose: 0,
+            goals: 0,
+            received: 0
+        }
+        req.models.Position.create(position, function(err, positionDb){
+
+        });
+    }
+}
+
 exports.addEdition = function(req, res, next) {
     var tournament = req.body.tournament;
     var edition = req.body.edition;
@@ -146,7 +165,7 @@ exports.addEdition = function(req, res, next) {
         } else {
             edition.league = tournamentDb.id;
             edition.leagueName = tournamentDb.name;
-            edition.size = (edition.teams.length - 1) * 2; //if league
+            edition.size = req.body.double ? (edition.teams.length - 1) * 2 : (edition.teams.length - 1); //if league
             edition.playing = 1;
             req.models.Edition.create(edition, function(err, editionDb) {
                 if (err) {
@@ -154,6 +173,7 @@ exports.addEdition = function(req, res, next) {
                         error: 'Error to update the value.'
                     });
                 } else {
+                    createNewPosition(req, editionDb);
                     setupEdition(req, res, tournamentDb, editionDb);
                 }
             });

@@ -42,12 +42,13 @@ function TournamentSaveResource($resource) {
 };
 
 function EditionResource($resource) {
-    return $resource("/edition/:tournament/:edition", {}, {
+    return $resource("/edition/:tournament/:edition/:double", {}, {
         save: {
             method: 'POST',
             data: {
                 tournament: "@tournament",
-                edition: "@edition"
+                edition: "@edition",
+                double: "@double"
             }
         },
         getAll: {
@@ -79,6 +80,11 @@ function RoundResource($resource) {
             data: {
                 edition: "@edition",
                 week: "@week"
+            },
+            interceptor: {
+                response: function(response) {
+                    return response.data;
+                }
             }
         }
     });

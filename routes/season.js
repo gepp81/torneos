@@ -122,19 +122,70 @@ exports.getRound = function(req, res, next) {
     }
 }
 
+function addPosition(req, gameDb) {
+    req.models.Position.find({
+        edition: req.body.edition,
+        team: gameDb.home
+    }, function(err, positions) {
+        if (err) throw err;
+        var position = positions[0];
+        position.games++;
+        position.goals = parseInt(gameDb.homeGoals);
+        position.received = parseInt(gameDb.awayGoals);
+        if (gameDb.awayGoals > gameDb.homeGoals) {
+            position.lose++;
+        } else if (gameDb.awayGoals < gameDb.homeGoals) {
+            position.win++;
+        } else {
+            position.tie++;
+        }
+        position.save(function(err) {
+            if (err) throw err;
+        });
+    });
+    req.models.Position.find({
+        edition: req.body.edition,
+        team: gameDb.away
+    }, function(err, positions) {
+        if (err) throw err;
+        var position = positions[0];
+        position.games++;
+        position.received += parseInt(gameDb.homeGoals);
+        position.goals += parseInt(gameDb.awayGoals);
+        if (gameDb.awayGoals < gameDb.homeGoals) {
+            position.lose++;
+        } else if (gameDb.awayGoals > gameDb.homeGoals) {
+            position.win++;
+        } else {
+            position.tie++;
+        }
+        position.save(function(err) {
+            if (err) throw err;
+        });
+    });
+
+}
+
 exports.playGame = function(req, res, next) {
     var gameId = req.body.id;
     req.models.Game.get(gameId, function(err, gameDb) {
-        console.log("game" + gameDb.id);
-        console.log("game" + gameDb.away);        
-        console.log("game" + gameDb.home);
-        req.models.Team.find({
-            name: [gameDb[0].home, gameDb.away]
-        }, function(err, teams) {
-            var engine = new Engine(gameDb, teams);
-            engine.playGame();
-            gameDb.save(function(err) {
+        if (!gameDb.awayGoals && !gameDb.homeGoals) {
+          
+
+            req.models.Team.find({
+                name: [gameDb.home, gameDb.away]
+            }, function(err, teams) {
+                var engine = new Engine(gameDb, teams);
+                var result = engine.playGame();
+                gameDb.awayGoals = result.awayGoals;
+                gameDb.homeGoals = result.homeGoals;
+                gameDb.save(function(err) {
+                    if (err) throw err;
+                    addPosition(req, gameDb);                    
+                    res.status(200).send(gameDb);
+
+                });
             });
-        });
+        }
     });
 }
