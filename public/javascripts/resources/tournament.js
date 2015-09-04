@@ -42,7 +42,7 @@ function TournamentSaveResource($resource) {
 };
 
 function EditionResource($resource) {
-    return $resource("/edition/:tournament/:edition/:double", {}, {
+    return $resource("/edition/:tournament/:edition/:double/:lastEdition", {}, {
         save: {
             method: 'POST',
             data: {
@@ -61,7 +61,8 @@ function EditionResource($resource) {
         getLastEdition: {
             method: 'GET',
             params: {
-                tournament: "@tournament"
+                tournament: "@tournament",
+                lastEdition: "@lastEdition"
             }
         }
     });

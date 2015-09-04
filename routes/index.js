@@ -60,6 +60,7 @@ router.get('/tournaments/getAll/', routesTournament.getAll);
 
 router.post('/edition', routesTournament.addEdition);
 router.get('/edition/:tournament', routesTournament.getEditions);
+router.get('/edition/:tournament/:lastEdition', routesTournament.getLastEdition);
 router.get('/fixture/:edition', routesTournament.getFixture);
 
 router.get('/seasons/:page', routesSeason.getSeason);

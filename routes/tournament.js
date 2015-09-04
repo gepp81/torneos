@@ -195,6 +195,19 @@ exports.getEditions = function(req, res, next) {
     })
 }
 
+exports.getLastEdition = function(req, res, next) {
+    req.models.Edition.find({
+        league: req.params.tournament, 
+        id: req.params.lastEdition
+    }, function(err, edition) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.status(200).send(edition[0]);
+        }
+    })
+}
+
 exports.getFixture = function(req, res, next) {
     req.models.Round.find({
         edition: req.params.edition
