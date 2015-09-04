@@ -7,36 +7,76 @@
         <!-- Table -->
         <div>
             <div style="text-align: center">
-                <pagination class="pagination" total-items="size" items-per-page="1" ng-model="weekPagination" ng-change="weekChanged()" 
-                            previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último">
+                <pagination class="pagination" total-items="size" items-per-page="1" ng-model="weekPagination" ng-change="weekChanged()" previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último">
                 </pagination>
-                <h4>Fecha {{weekPagination}} 
+
+                <h4 ng-if="weekPagination != size">Fecha {{weekPagination}} 
                     <button ng-click="playWeek(rounds)" class="btn btn-sm btn-info" >Jugar</button>
                 </h4>
+                <h4 ng-if="weekPagination == size">Posiciones Finales</h4>
             </div>
 
             <accordion close-others="false">
                 <accordion-group ng-repeat="(key, value) in editions" is-open="true" 
-                                 ng-show="rounds[value.id].rounds.games.length > 0">
+                                 ng-show="rounds[value.id].rounds.games.length > 0 || weekPagination == size">
                     <accordion-heading>
                         {{key}} > {{value.id}}
                     </accordion-heading>
-                    <span ng-repeat="round in rounds[value.id]">
-                    <button ng-click="playGames(round.games)" class="btn btn-sm btn-info" >Jugar</button>
-                        <table class="table">
-                            <tr ng-repeat="game in round.games">
-                                <td style="width:45%; text-align:right" >{{game.home}}</td>
-                                <td style="width:5%;background-color: #eee; border: 1px solid #999; text-align: center;">
-                                    {{game.homeGoals}}
-                                </td>
-                                <td style="width:5%;background-color: #eee; border: 1px solid #999;text-align: center;">
-                                    {{game.awayGoals}}
-                                </td>
-                                <td style="width:45%; text-align:left" >{{game.away}}</td>
-                            </tr>
-                        </table>
-                    </span>
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-6" ng-if="weekPagination != size">
+                                    <span ng-repeat="round in rounds[value.id]">
+                                        Partidos
+                                        <table class="table">
+                                            <tr ng-repeat="game in round.games">
+                                                <td style="width:45%; text-align:right" >{{game.home}}</td>
+                                                <td style="width:5%;background-color: #eee; border: 1px solid #999; text-align: center;">
+                                                    {{game.homeGoals}}
+                                                </td>
+                                                <td style="width:5%;background-color: #eee; border: 1px solid #999;text-align: center;">
+                                                    {{game.awayGoals}}
+                                                </td>
+                                                <td style="width:45%; text-align:left" >{{game.away}}</td>
+                                            </tr>
+                                        </table>
+                                    </span>
+                                </div>
+                                <div class="col-md-6">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>Posiciones</th>
+                                                <th>Puntos</th>
+                                                <th>Pj</th>
+                                                <th>Pg</th>
+                                                <th>Pe</th>
+                                                <th>Pp</th>
+                                                <th>Gf</th>
+                                                <th>Gc</th>
+                                                <th>Dg</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr ng-repeat="item in positions[value.id].positions | 
+                                                               orderBy:['-points', '-dg', 'goals']">
+                                                <td>{{item.team}}</td>
+                                                <td>{{item.points}}</td>
+                                                <td>{{item.games}}</td>
+                                                <td>{{item.win}}</td>
+                                                <td>{{item.tie}}</td>
+                                                <td>{{item.lose}}</td>
+                                                <td>{{item.goals}}</td>
+                                                <td>{{item.received}}</td>
+                                                <td>{{item.dg}}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                 </accordion-group>
             </accordion>
+            </div>
         </div>
-    </div>

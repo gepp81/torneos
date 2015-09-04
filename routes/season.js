@@ -90,7 +90,6 @@ exports.createSeason = function(req, res, next) {
                         }
                     });
                 }
-
             })
     }
 }
@@ -117,9 +116,49 @@ exports.getRound = function(req, res, next) {
                 } else {
                     res.status(200).send(configs);
                 }
-
             })
     }
+}
+
+exports.getPosition = function(req, res, next) {
+    var editions = req.body.editions;
+    if (editions) {
+        var configs = {};
+        async.forEachOf(editions, function(value, key, callback) {
+                req.models.Position.find({
+                    edition: value.id
+                }).order('id').run(function(err, positions) {
+                    if (err) return callback(err);
+                    configs[value.id] = {
+                        positions: positions
+                    };
+                    callback();
+                })
+            },
+            function(err) {
+                if (err) {
+                    req.status(500).send(err);
+                } else {
+                    res.status(200).send(configs);
+                }
+            })
+    }
+}
+
+function savePosition(position, goals, received) {
+    position.games++;
+    position.goals = parseInt(position.goals) + parseInt(goals);
+    position.received = parseInt(position.received) + parseInt(received);
+    if (goals < received) {
+        position.lose++;
+    } else if (goals > received) {
+        position.win++;
+    } else {
+        position.tie++;
+    }
+    position.save(function(err) {
+        if (err) throw err;
+    });
 }
 
 function addPosition(req, gameDb) {
@@ -128,50 +167,21 @@ function addPosition(req, gameDb) {
         team: gameDb.home
     }, function(err, positions) {
         if (err) throw err;
-        var position = positions[0];
-        position.games++;
-        position.goals = parseInt(gameDb.homeGoals);
-        position.received = parseInt(gameDb.awayGoals);
-        if (gameDb.awayGoals > gameDb.homeGoals) {
-            position.lose++;
-        } else if (gameDb.awayGoals < gameDb.homeGoals) {
-            position.win++;
-        } else {
-            position.tie++;
-        }
-        position.save(function(err) {
-            if (err) throw err;
-        });
+        savePosition(positions[0], gameDb.homeGoals, gameDb.awayGoals);
     });
     req.models.Position.find({
         edition: req.body.edition,
         team: gameDb.away
     }, function(err, positions) {
         if (err) throw err;
-        var position = positions[0];
-        position.games++;
-        position.received += parseInt(gameDb.homeGoals);
-        position.goals += parseInt(gameDb.awayGoals);
-        if (gameDb.awayGoals < gameDb.homeGoals) {
-            position.lose++;
-        } else if (gameDb.awayGoals > gameDb.homeGoals) {
-            position.win++;
-        } else {
-            position.tie++;
-        }
-        position.save(function(err) {
-            if (err) throw err;
-        });
+        savePosition(positions[0], gameDb.awayGoals, gameDb.homeGoals);
     });
-
 }
 
 exports.playGame = function(req, res, next) {
     var gameId = req.body.id;
     req.models.Game.get(gameId, function(err, gameDb) {
         if (!gameDb.awayGoals && !gameDb.homeGoals) {
-          
-
             req.models.Team.find({
                 name: [gameDb.home, gameDb.away]
             }, function(err, teams) {
@@ -181,9 +191,8 @@ exports.playGame = function(req, res, next) {
                 gameDb.homeGoals = result.homeGoals;
                 gameDb.save(function(err) {
                     if (err) throw err;
-                    addPosition(req, gameDb);                    
+                    addPosition(req, gameDb);
                     res.status(200).send(gameDb);
-
                 });
             });
         }

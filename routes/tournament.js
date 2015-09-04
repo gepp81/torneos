@@ -12,6 +12,7 @@ exports.create = function(req, res, next) {
         }
         if (!error) {
             tournament.editionPlayed = 0;
+            tournament.editionNumber = 0;
             req.models.Tournament.create(tournament, function(err, tournamentDb) {
                 if (err) {
                     res.status(500).send(err);
@@ -118,6 +119,7 @@ function setupEdition(req, res, tournamentDb, editionDb) {
             },
             two: function(callback) {
                 tournamentDb.editionPlayed = editionDb.id;
+                tournamentDb.editionNumber = parseInt(tournamentDb.editionNumber) + 1;
                 tournamentDb.save(function(err) {
                     if (err) {
                         callback(err);

@@ -57,6 +57,12 @@ function EditionResource($resource) {
                 tournament: "@tournament"
             },
             isArray: 'true'
+        },
+        getLastEdition: {
+            method: 'GET',
+            params: {
+                tournament: "@tournament"
+            }
         }
     });
 };
@@ -80,6 +86,22 @@ function RoundResource($resource) {
             data: {
                 edition: "@edition",
                 week: "@week"
+            },
+            interceptor: {
+                response: function(response) {
+                    return response.data;
+                }
+            }
+        }
+    });
+};
+
+function PositionResource($resource) {
+    return $resource("/position/:editions", {}, {
+        getPosition: {
+            method: 'POST',
+            data: {
+                edition: "@edition"
             },
             interceptor: {
                 response: function(response) {

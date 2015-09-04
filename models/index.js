@@ -30,7 +30,8 @@ module.exports = function(db, models) {
         tie: 'integer',
         lose: 'integer',
         goals: 'integer',
-        received: 'integer'
+        received: 'integer',
+        final: 'integer'
     })
 
     models.Game = db.define('game', {
@@ -59,10 +60,6 @@ module.exports = function(db, models) {
         cache: false
     });
 
-    /*    models.User.hasMany("permissions", models.Permission, {}, {
-            autoFetch: true
-        });*/
-
     models.Tournament = db.define("tournament", {
         id: 'serial',
         name: {
@@ -70,6 +67,7 @@ module.exports = function(db, models) {
             required: true,
             unique: true
         },
+        editionNumber: String,
         editionPlayed: String
     });
 

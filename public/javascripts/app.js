@@ -69,6 +69,7 @@ app
     .factory("Application", ApplicationResource)
     .factory("Round", RoundResource)
     .factory("Game", GameResource)
+    .factory("Position", PositionResource)
     .factory("TournamentSave", TournamentSaveResource);
 
 app

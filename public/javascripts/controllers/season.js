@@ -79,7 +79,23 @@ function SeasonNewController($scope, $modal, $state, $stateParams, SeasonTournam
 
 }
 
-function SeasonPlayController($scope, $modal, $state, Season, Application, Round, Game) {
+function SeasonPlayController($scope, $modal, $state, Season, Application, Round, Game, Position) {
+
+    var getPositions = function(editions) {
+        Position.getPosition({
+            editions: editions
+        }, function(data) {
+            angular.forEach(data, function(value, key) {
+                angular.forEach(value.positions, function(pos, poskey) {
+                    pos.points = $scope.getPoints(pos);
+                    pos.dg = pos.goals - pos.received;
+                });
+            });
+            $scope.positions = data;            
+        }, function(err) {
+
+        });
+    }
 
     var getRound = function(editions, week) {
         Round.getRound({
@@ -93,7 +109,9 @@ function SeasonPlayController($scope, $modal, $state, Season, Application, Round
     }
 
     $scope.weekChanged = function() {
-        getRound($scope.editions, $scope.weekPagination);
+        if ($scope.weekPagination != $scope.size)
+            getRound($scope.editions, $scope.weekPagination);
+        getPositions($scope.editions);
     }
 
     var getSeason = function() {
@@ -105,9 +123,10 @@ function SeasonPlayController($scope, $modal, $state, Season, Application, Round
                     },
                     function(data) {
                         $scope.editions = data.editions;
-                        $scope.size = data.size;
+                        $scope.size = data.size + 1;
                         $scope.weekPagination = data.week;
                         getRound(data.editions, data.week);
+                        $scope.weekChanged();
                     },
                     function(err) {
 
@@ -124,25 +143,32 @@ function SeasonPlayController($scope, $modal, $state, Season, Application, Round
                 id: games[key].id
             }, function(data) {
                 games[key] = data
-            }, function(err) {
-            });
+            }, function(err) {});
         });
 
     }
 
     $scope.playWeek = function(round) {
         angular.forEach(round, function(eValue, eKey) {
-            angular.forEach(round[eKey].rounds.games, function(value, key) {
-                Game.play({
-                    id: round[eKey].rounds.games[key].id,
-                    edition: round[eKey].rounds.edition
-                }, function(data) {
-                    round[eKey].rounds.games[key] = data
-                }, function(err) {
+            if (round[eKey].rounds) {
+                angular.forEach(round[eKey].rounds.games, function(value, key) {
+                    if (round[eKey].rounds.games[key].homeGoals === null && round[eKey].rounds.games[key].awayGoals === null) {
+                        Game.play({
+                            id: round[eKey].rounds.games[key].id,
+                            edition: round[eKey].rounds.edition
+                        }, function(data) {
+                            round[eKey].rounds.games[key] = data;
+                        }, function(err) {
 
+                        });
+                    }
                 });
-            });
+            }
         });
+    }
+    
+    $scope.getPoints = function (position) {
+        return  position.win * 3 + position.tie;
     }
 
     getSeason();

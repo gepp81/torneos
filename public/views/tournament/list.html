@@ -30,7 +30,7 @@
                     <!--tr ng-repeat="item in dependenciesList | filter: {id:searchProcess}"-->
                     <tr ng-repeat="item in tournaments">
                         <td class="paddingLeftOnePercent">{{item.name}}</td>
-                        <td class="paddingLeftOnePercent">{{item.editionPlayed}}</td>
+                        <td class="paddingLeftOnePercent">{{item.editionNumber}}</td>
                         <td>
                             <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#editModal"  
                                     ng-click="open('lg', item)">

@@ -138,6 +138,17 @@ function TournamentEditionController($scope, $state, $stateParams, Team, Edition
             function(error) {});
     }
 
+    $scope.changeState = function() {
+        Edition.getLastEdition({
+              tournament: $scope.item
+        }, function(data){
+            $scope.double = data.size;
+            $scope.selectedItems = data.teams;
+        }, function (err){
+            
+        })
+    }
+
 };
 
 function EditionController($scope, $state, $stateParams, Edition) {
