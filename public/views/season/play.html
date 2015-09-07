@@ -59,7 +59,7 @@
                                         </thead>
                                         <tbody>
                                             <tr ng-repeat="item in positions[value.id].positions | 
-                                                               orderBy:['-points', '-dg', 'goals']">
+                                                               orderBy:['-points', '-dg', 'goals', 'final']">
                                                 <td>{{item.team}}</td>
                                                 <td>{{item.points}}</td>
                                                 <td>{{item.games}}</td>
@@ -72,6 +72,10 @@
                                             </tr>
                                         </tbody>
                                     </table>
+                                </div>
+                                <div class="col-md-6" ng-if="weekPagination == size">
+                                     <button ng-click="defineLeague(positions[value.id].positions, value.id)" class="btn btn-sm btn-info"  
+                                             ng-show="ties[value.id]">Definir</button>
                                 </div>
                             </div>
                         </div>

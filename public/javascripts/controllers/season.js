@@ -81,17 +81,36 @@ function SeasonNewController($scope, $modal, $state, $stateParams, SeasonTournam
 
 function SeasonPlayController($scope, $modal, $state, Season, Application, Round, Game, Position) {
 
+    var hasTies = function(positions) {
+        for (var i = 0; i < positions.length; i++) {
+            for (var j = 0; j < positions.length; j++) {
+                if (i !== j) {
+                    if (positions[i].points === positions[j].points) {
+                        if (positions[i].dg === positions[j].dg) {
+                            if (positions[i].goals === positions[j].goals) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     var getPositions = function(editions) {
         Position.getPosition({
             editions: editions
         }, function(data) {
+            $scope.ties = {};
             angular.forEach(data, function(value, key) {
                 angular.forEach(value.positions, function(pos, poskey) {
                     pos.points = $scope.getPoints(pos);
                     pos.dg = pos.goals - pos.received;
                 });
+                $scope.ties[key] = hasTies(value.positions);
             });
-            $scope.positions = data;            
+            $scope.positions = data;
         }, function(err) {
 
         });
@@ -166,9 +185,24 @@ function SeasonPlayController($scope, $modal, $state, Season, Application, Round
             }
         });
     }
-    
-    $scope.getPoints = function (position) {
-        return  position.win * 3 + position.tie;
+
+    $scope.defineLeague = function(positions, edition) {
+        Position.define({
+            edition: edition
+        }, function(data) {
+            angular.forEach(data, function(value, key) {
+                value.points = $scope.getPoints(value);
+                value.dg = value.goals - value.received;
+            });
+            $scope.positions[edition].positions = data;
+            $scope.ties[edition] = false;
+        }, function(err) {
+
+        });
+    }
+
+    $scope.getPoints = function(position) {
+        return position.win * 3 + position.tie;
     }
 
     getSeason();

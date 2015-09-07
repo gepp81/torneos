@@ -198,3 +198,75 @@ exports.playGame = function(req, res, next) {
         }
     });
 }
+
+
+var comparePosition = function(one, second) {
+
+    if (one.points == second.points) {
+        if ((one.goals - one.received) == (second.goals - second.received)) {
+            if (one.goals == second.goals) {
+                return one.valueSum < second.valueSum ? 1 : -1;
+            } else {
+                return one.goals < second.goals ? 1 : -1;
+            }
+        } else {
+            return (one.goals - one.received) < (second.goals - second.received) ? 1 : -1;
+        }
+    } else {
+        return one.points < second.points ? 1 : -1;
+    }
+}
+
+var definePositions = function(req, res, positionDb) {
+    positionDb.sort(comparePosition);
+
+    var i = 1;
+    async.eachSeries(positionDb, function(value, callback) {
+        value.final = i;
+        value.save(function(err) {});
+        i++;
+        callback();
+    }, function(err) {
+        if (err) {
+            res.status(500).send(err);
+        } else {
+            res.status(200).send(positionDb);
+        }
+    });
+}
+
+exports.definePosition = function(req, res, next) {
+    var edition = req.body.edition;
+    req.models.Position.find({
+        edition: edition
+    }, function(err, positionsDb) {
+        var teams = new Array();
+        async.eachSeries(positionsDb, function(value, callback) {
+                req.models.Team.find({
+                    name: value.team
+                }, function(err, teamDb) {
+                    if (err) return callback(err);
+
+                    var skills = teamDb[0].skill.split(",");
+                    var sum = 0;
+                    for (var i = 0; i < skills.length; i++) {
+                        sum = sum + parseInt(skills[i]);
+                    }
+                    var calculateValue = Math.floor(Math.random() * 100) + sum;
+
+                    while (teams.indexOf(value) != -1) {
+                        calculateValue = Math.floor(Math.random() * 100) + sum;
+                    }
+                    value.valueSum = calculateValue;
+                    callback();
+                })
+            },
+            function(err) {
+                if (err) {
+                    res.status(500).send(err);
+                } else {
+                    definePositions(req, res, positionsDb);
+                }
+            })
+    });
+}

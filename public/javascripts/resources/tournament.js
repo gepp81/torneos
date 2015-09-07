@@ -109,6 +109,18 @@ function PositionResource($resource) {
                     return response.data;
                 }
             }
+        },
+        define: {
+            method: 'PUT',
+            data: {
+                edition: "@edition"
+            },
+            isArray: 'true',
+            interceptor: {
+                response: function(response) {
+                    return response.data;
+                }
+            }
         }
     });
 };

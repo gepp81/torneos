@@ -28,13 +28,26 @@ exports.create = function(req, res, next) {
 };
 
 exports.get = function(req, res, next) {
-    req.models.Team.get(req.params.id, function(err, teamDb) {
-        if (err) {
-            res.status(500).send("errorrrr pq no definio un team");
-        } else {
-            res.status(200).send(teamDb);
-        }
-    });
+    if (req.params.id) {
+        req.models.Team.get(req.params.id, function(err, teamDb) {
+            if (err) {
+                res.status(500).send("errorrrr pq no definio un team");
+            } else {
+                res.status(200).send(teamDb);
+            }
+        });
+    } else {
+        req.models.Team.find({
+                name: req.params.name
+            },
+            function(err, teamDb) {
+                if (err) {
+                    res.status(500).send("errorrrr pq no definio un team");
+                } else {
+                    res.status(200).send(teamDb[0]);
+                }
+            });
+    }
 };
 
 exports.getAllTeams = function(req, res, next) {

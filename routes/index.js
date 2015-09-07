@@ -12,28 +12,35 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/application', function(req, res, next) {
-    req.models.Application.get(1, function(err, appDb) {
-        if (err) {
-            var app = {};
-            app.season = req.body.season.id;
-            req.models.Application.create(app, function(err, appDb) {
+    req.models.Season.get(req.body.season.id, function(err, seasonDb) {
+        if (err) throw err;
+        seasonDb.status = "Jugando";
+        seasonDb.save(seasonDb, function(err) {
+            req.models.Application.get(1, function(err, appDb) {
                 if (err) {
-                    res.status(500).send(err);
+                    var app = {};
+                    app.season = req.body.season.id;
+                    req.models.Application.create(app, function(err, appDb) {
+                        if (err) {
+                            res.status(500).send(err);
+                        } else {
+                            res.status(200).send();
+                        }
+                    });
                 } else {
-                    res.status(200).send();
+                    appDb.season = req.body.season.id;
+                    appDb.save(function(err) {
+                        if (err) {
+                            res.status(500).send(err);
+                        } else {
+                            res.status(200).send();
+                        }
+                    })
                 }
             });
-        } else {
-            appDb.season = req.body.season.id;
-            appDb.save(function(err) {
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    res.status(200).send();
-                }
-            })
-        }
+        });
     });
+
 });
 
 router.get('/application', function(req, res, next) {
@@ -68,6 +75,7 @@ router.get('/season/:id', routesSeason.get);
 router.post('/season', routesSeason.createSeason);
 router.post('/round', routesSeason.getRound);
 router.post('/position', routesSeason.getPosition);
+router.put('/position', routesSeason.definePosition);
 router.post('/game', routesSeason.playGame);
 
 module.exports = router;
