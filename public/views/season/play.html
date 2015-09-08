@@ -20,7 +20,7 @@
                 <accordion-group ng-repeat="(key, value) in editions" is-open="true" 
                                  ng-show="rounds[value.id].rounds.games.length > 0 || weekPagination == size">
                     <accordion-heading>
-                        {{key}} > {{value.id}}
+                        <h4>{{key}} > {{value.id}}</h4>
                     </accordion-heading>
                     <div class="panel panel-default">
                         <div class="panel-body">
@@ -42,7 +42,7 @@
                                         </table>
                                     </span>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6" ng-class="classLastPage()">
                                     <table class="table">
                                         <thead>
                                             <tr>

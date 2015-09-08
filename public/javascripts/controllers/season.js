@@ -225,6 +225,14 @@ function SeasonPlayController($scope, $modal, $state, Season, Application, Round
         return position.win * 3 + position.tie;
     }
 
+    $scope.classLastPage = function() {
+        if ($scope.weekPagination == $scope.size) {
+            return 'leftMargin25';
+        }
+        return '';
+    }
+
+
     getSeason();
 
 }

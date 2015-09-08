@@ -67,6 +67,10 @@ body {
     margin: 0 auto;
 }
 
+.leftMargin25 {
+    margin-left: 25%;
+}
+
 .modal {
     margin-top: 15%;
 }
