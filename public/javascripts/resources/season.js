@@ -25,10 +25,17 @@ function SeasonTournamentResource($resource) {
 };
 
 function SeasonResource($resource) {
-    return $resource("/season/:id", {}, {
+    return $resource("/season/:id/:week", {}, {
         get: {
             method: 'get',
             params: {
+                id: "@id"
+            }
+        },
+        saveWeek: {
+            method: 'put',
+            data: {
+                week: "@week",
                 id: "@id"
             }
         }

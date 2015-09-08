@@ -46,7 +46,7 @@ body {
 }
 
 .width30 {
-    width: 30%;
+    width: 30%!important;
 }
 
 /** Margin y padding **/
@@ -74,4 +74,9 @@ body {
 .central {
     width: 80%;
     margin: auto;
+}
+
+.radio, .checkbox {
+    margin-top: 0px!important;
+    margin-bottom: 0px!important;
 }

@@ -83,7 +83,7 @@ function TournamentSaveController($scope, $modalInstance, TournamentSave, tourna
 
 function TournamentEditionController($scope, $state, $stateParams, Team, Edition) {
     $scope.item = $stateParams.item;
-    $scope.selectedItems = [];
+    $scope.selectedItems = new Array();
 
     $scope.addToList = function(item) {
         var index = $scope.selectedItems.indexOf(item);

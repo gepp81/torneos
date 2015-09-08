@@ -168,6 +168,12 @@ function SeasonPlayController($scope, $modal, $state, Season, Application, Round
     }
 
     $scope.playWeek = function(round) {
+        Season.saveWeek({
+            week: $scope.weekPagination + 1,
+            id: $scope.season.id
+        }, function(data) {}, function(err) {
+
+        });
         angular.forEach(round, function(eValue, eKey) {
             if (round[eKey].rounds) {
                 angular.forEach(round[eKey].rounds.games, function(value, key) {
@@ -199,6 +205,20 @@ function SeasonPlayController($scope, $modal, $state, Season, Application, Round
         }, function(err) {
 
         });
+    }
+
+    $scope.getColorPosition = function(pos) {
+        var classLabel = 'label label-';
+        if (pos == 1) {
+            return classLabel + 'primary';
+        }
+        if (pos == 2) {
+            return classLabel + 'info';
+        }
+        if (pos == 3) {
+            return classLabel + 'success';
+        }
+        return '';
     }
 
     $scope.getPoints = function(position) {

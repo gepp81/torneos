@@ -8,33 +8,58 @@
             <form ng-submit="" method="post" name="addEdition" novalidate>
                 <div class="width50 marginAuto">
                     <br/>
-                    <div class="input-group">
-                        <span class="input-group-addon" id="basic-addon1">
+                    <div class="input-group width100">
+                        <span class="input-group-addon width30" id="basic-addon1">
                             Repetir Participandes
                         </span>
                         <span class="form-control">
-                            <input type="checkbox" ng-model="repeat" ng-click="changeState()"/>
+                            <div class="checkbox checkbox-primary">
+                                <input id="checkRepeat" type="checkbox" ng-model="repeat" ng-click="changeState()"/>
+                                <label for="checkRepeat"></label>
+                            </div>
                         </span>
-                    </div>                    
-                    <div class="input-group" ng-show="!repeat">
-                        <span class="input-group-addon" id="basic-addon1">
+                    </div>          
+                    <div class="input-group width100" ng-show="!repeat">
+                        <span class="input-group-addon width30" id="basic-addon1">
                             Total de Equipos
                         </span>
                         <select ng-options="item as item.value for item in options track by item.value" 
                                 ng-model="selectedOption" class="form-control">
                         </select>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon" id="basic-addon1">
+                    <div class="input-group width100">
+                        <span class="input-group-addon width30" id="basic-addon1">
                             Ida y Vuelta
                         </span>
 
                         <span class="form-control">
-                            <input type="checkbox" ng-model="double"/>
+                            <div class="checkbox checkbox-primary">
+                                <input id="checkDouble" type="checkbox" class="styled" ng-model="double"/>
+                                <label for="checkDouble"></label>                                
+                            </div>
                         </span>
                     </div>
-                    <div class="input-group" ng-show="!repeat">
-                        <span class="input-group-addon" id="basic-addon1">
+                    <div class="input-group width100">
+                        <span class="input-group-addon width30" id="basic-addon1">
+                            Tipo
+                        </span>
+                        <span class="form-control">
+                            <div class="radio radio-primary radio-inline">
+                                <input type="radio" id="inlineRadio1" value="LEAGUE" name="radioInline" ng-model="type" checked>
+                                <label for="inlineRadio1">Liga</label>
+                            </div>
+                            <div class="radio radio-primary radio-inline">
+                                <input type="radio" id="inlineRadio2" value="CUP" name="radioInline" ng-model="type">
+                                <label for="inlineRadio2">Copa</label>
+                            </div>
+                            <div class="radio radio-primary radio-inline">
+                                <input type="radio" id="inlineRadio3" value="MIX" name="radioInline" ng-model="type">
+                                <label for="inlineRadio3">Mixto</label>
+                            </div>                            
+                        </span>
+                    </div>                    
+                    <div class="input-group width100" ng-show="!repeat">
+                        <span class="input-group-addon width30" id="basic-addon1">
                             Agregar
                         </span>
                         <input type="text" ng-model="teamSelected" 
@@ -68,3 +93,4 @@
             </form>
         </div>
     </div>
+</div>

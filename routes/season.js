@@ -270,3 +270,12 @@ exports.definePosition = function(req, res, next) {
             })
     });
 }
+
+exports.saveWeek = function (req, res, next) {
+    req.models.Season.get(req.body.id, function(err, seasonDb){
+        seasonDb.week = req.body.week;
+        seasonDb.save(function(err){
+            res.status(200).send();
+        });
+    });
+}

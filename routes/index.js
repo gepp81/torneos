@@ -72,6 +72,7 @@ router.get('/fixture/:edition', routesTournament.getFixture);
 
 router.get('/seasons/:page', routesSeason.getSeason);
 router.get('/season/:id', routesSeason.get);
+router.put('/season', routesSeason.saveWeek);
 router.post('/season', routesSeason.createSeason);
 router.post('/round', routesSeason.getRound);
 router.post('/position', routesSeason.getPosition);
