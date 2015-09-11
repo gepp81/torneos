@@ -180,16 +180,6 @@ function addPosition(req, gameDb) {
     });
 }
 
-function updateGame(req, res, gameDb, result) {
-    gameDb.awayGoals = result.awayGoals;
-    gameDb.homeGoals = result.homeGoals;
-    gameDb.save(function(err) {
-        if (err) throw err;
-        addPosition(req, gameDb);
-        gameDb.winner = result.winner;
-        res.status(200).send(gameDb);
-    });
-}
 
 exports.playGame = function(req, res, next) {
     var gameId = req.body.id;
@@ -328,4 +318,153 @@ exports.saveWeek = function(req, res, next) {
             res.status(200).send();
         });
     });
+}
+
+
+
+
+
+
+function updateGame(req, res, gameDb, result) {
+    gameDb.awayGoals = result.awayGoals;
+    gameDb.homeGoals = result.homeGoals;
+    gameDb.save(function(err) {
+        if (err) throw err;
+        addPosition(req, gameDb);
+        gameDb.winner = result.winner;
+
+    });
+}
+
+
+
+exports.playGames = function(req, res, next) {
+    var final = req.body.final;
+    var double = req.body.double;
+    var number = req.body.number;
+    var edition = req.body.edition;
+    var winners = new Array();
+    req.models.Round.find({
+        edition: edition,
+        number: number
+    }, function(err, roundDb) {
+        async.eachSeries(roundDb[0].games, function(value, callback) {
+                if (!value.awayGoals && !value.homeGoals) {
+                    async.parallel({
+                            teams: function(callback) {
+                                req.models.Team.find({
+                                    name: [value.home, value.away]
+                                }, function(err, teams) {
+                                    if (err) {
+                                        callback(err);
+                                        return;
+                                    }
+                                    callback(null, teams);
+                                });
+                            },
+                            lastGame: function(callback) {
+                                if (double && final) {
+                                    req.models.Round.find({
+                                        number: parseInt(number - 1),
+                                        edition: edition
+                                    }, function(err, roundDbLast) {
+                                        if (err) {
+                                            callback(err);
+                                            return;
+                                        }
+                                        var games = roundDbLast[0].games;
+                                        for (var key in games) {
+                                            var game = games[key];
+                                            if (game.away == value.home && game.home == value.away) {
+                                                callback(null, game);
+                                                return;
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    callback(null, false);
+                                }
+                            }
+                        },
+                        function(err, results) {
+                            var engine = new Engine(value, results.teams);
+                            engine.setFinal(final);
+                            engine.setDouble(double);
+                            if (double && final) {
+                                engine.setLastGame(results.lastGame);
+                            }
+                            var result = engine.playGame();
+                            winners.push(result.winner);
+                            updateGame(req, res, value, result);
+                            callback();
+                        }
+                    );
+                }
+            },
+            function(err) {
+                if (!final) {
+                    res.status(200).send({});
+                } else {
+                    console.log(winners.length);
+                    if (winners.length > 0) {
+                        generateNextRound(req, res, winners, edition, number, double);
+                    }
+                }
+            }
+        );
+    })
+};
+
+function generateNextRound(req, res, winners, edition, number, double) {
+    var number = number + 1;
+
+    req.models.Round.find({
+            edition: edition,
+            number: parseInt(number)
+        },
+        function(err, roundDb) {
+            if (roundDb.length > 0) {
+                var gamesDb = roundDb[0].games;
+                for (var i = 0; i < gamesDb.length; i = i + 2) {
+                    gamesDb[i].home = winners[i];
+                    gamesDb[i].away = winners[i + 1];
+                }
+console.log("1");
+                for (var key in gamesDb) {
+                    var gameDb = gamesDb[key];
+                    console.log("2");
+                    gameDb.save(function(err) {
+console.log("3");
+                    })
+                }
+
+                if (double) {
+                    number = number + 1;
+                    req.models.Round.find({
+                            edition: edition,
+                            number: parseInt(number)
+                        },
+                        function(err, roundDb) {
+                            if (roundDb.length > 0) {
+                                var gamesDb = roundDb[0].games;
+                                for (var i = 0; i < gamesDb.length; i = i + 2) {
+                                    gamesDb[i].home = winners[i + 1];
+                                    gamesDb[i].away = winners[i];
+                                }
+                                for (var key in gamesDb) {
+                                    var gameDb = gamesDb[key];
+                                    gameDb.save(function(err) {
+
+                                    })
+                                }
+                            }
+                            res.status(200).send();
+                        });
+                } else {
+                    res.status(200).send();
+                }
+            } else {
+                res.status(200).send();
+            }
+        });
 }

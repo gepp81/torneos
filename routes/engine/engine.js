@@ -123,7 +123,6 @@ module.exports = function Engine(game, teams) {
             var result = this.playSimpleGame();
             var roundResults = this.getTeamDoubleResults(result, this.lastGame, this.game);
             wrongResult = roundResults.status;
-            console.log(roundResults.winner);
             if (roundResults.winner)
                 result.winner = roundResults.winner;
         }

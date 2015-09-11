@@ -53,6 +53,15 @@ function GameResource($resource) {
                 final: "@final",
                 double: "@double"
             }
+        },
+        playGames: {
+            method: 'put',
+            data: {
+                edition: "@edition",
+                number: "@number",
+                final: "@final",
+                double: "@double"
+            }
         }
     });
 };

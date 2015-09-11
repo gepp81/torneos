@@ -169,38 +169,25 @@ function SeasonPlayController($scope, $modal, $state, $q, Season, Application, R
 
     $scope.playWeek = function(round) {
 
-        if (!$scope.winners)
-            $scope.winners = new Array();
-
         angular.forEach(round, function(eValue, eKey) {
             if (round[eKey].rounds) {
-                angular.forEach(round[eKey].rounds.games, function(value, key) {
-                    if (round[eKey].rounds.games[key].homeGoals === null && round[eKey].rounds.games[key].awayGoals === null) {
-                        if (round[eKey].rounds.games[key].home !== null && round[eKey].rounds.games[key].away !== null) {
-                            Game.play({
-                                id: round[eKey].rounds.games[key].id,
+//                angular.forEach(round[eKey].rounds.games, function(value, key) {
+  //                  if (round[eKey].rounds.games[key].homeGoals === null && round[eKey].rounds.games[key].awayGoals === null) {
+    //                    if (round[eKey].rounds.games[key].home !== null && round[eKey].rounds.games[key].away !== null) {
+                            Game.playGames({
                                 edition: round[eKey].rounds.edition,
                                 final: round[eKey].rounds.final,
                                 double: round[eKey].double,
                                 number: round[eKey].rounds.number,
                             }, function(data) {
-                                round[eKey].rounds.games[key] = data;
-                                if (round[eKey].rounds.final) {
-                                    if (!$scope.winners[round[eKey].rounds.edition]) {
-                                        $scope.winners[round[eKey].rounds.edition] = new Array();
-                                    }
-                                    $scope.winners[round[eKey].rounds.edition].push(data.winner);
-                                }
+                                 getRound($scope.editions, $scope.weekPagination);
                             }, function(err) {
-                                $scope.canPlay = true;
                             });
-                        }
-                    }
-                });
+      //                  }
+        //            }
+//              /  });
             }
         });
-        
-        $scope.canPlay = false;
     };
 
     $scope.defineLeague = function(positions, edition) {

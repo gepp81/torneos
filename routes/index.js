@@ -78,5 +78,6 @@ router.post('/round', routesSeason.getRound);
 router.post('/position', routesSeason.getPosition);
 router.put('/position', routesSeason.definePosition);
 router.post('/game', routesSeason.playGame);
+router.put('/game', routesSeason.playGames);
 
 module.exports = router;
