@@ -19,9 +19,11 @@ module.exports = function(db, models) {
         leagueName: 'text',
         teams: Object,
         size: 'integer',
-        playing: 'integer'
+        playing: 'integer',
+        type: 'text',
+        double: 'boolean'
     });
-    
+
     models.Position = db.define("position", {
         edition: 'integer',
         team: String,
@@ -51,7 +53,11 @@ module.exports = function(db, models) {
     models.Round = db.define('round', {
         id: 'serial',
         edition: 'integer',
-        number: 'integer'
+        number: 'integer',
+        final: {
+            type: 'boolean',
+            defaultValue: false
+        }
     });
 
     models.Round.hasMany('games', models.Game, {}, {
@@ -87,13 +93,10 @@ module.exports = function(db, models) {
     models.Application = db.define("application", {
         season: 'integer'
     });
-    
+
     // Sincronize db ONLY FOR FIRST
     /*db.drop(function() {
-        // dropped all tables from defined models (Person and Pet)
-
         db.sync(function() {
-            // created tables for Person model
         });
     });*/
 };

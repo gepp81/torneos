@@ -125,8 +125,8 @@ function TournamentEditionController($scope, $state, $stateParams, Team, Edition
                 tournament: $scope.item,
                 edition: {
                     teams: $scope.selectedItems,
-                    size: $scope.selectedOption
-
+                    size: $scope.selectedOption,
+                    type: $scope.type
                 },
                 double: $scope.double
             },

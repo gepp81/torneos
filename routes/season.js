@@ -63,7 +63,8 @@ exports.createSeason = function(req, res, next) {
                     if (err) return callback(err);
                     configs[value] = {
                         id: editionDb[0].id,
-                        size: editionDb[0].size
+                        size: editionDb[0].size,
+                        double: editionDb[0].double
                     };
                     callback();
                 })
@@ -102,17 +103,18 @@ exports.getRound = function(req, res, next) {
                 req.models.Round.find({
                     edition: value.id,
                     number: req.body.week
-                }).order('id').run(function(err, rounds) {
+                }).order('number').run(function(err, rounds) {
                     if (err) return callback(err);
                     configs[value.id] = {
-                        rounds: rounds[0]
+                        rounds: rounds[0],
+                        double: value.double
                     };
                     callback();
                 })
             },
             function(err) {
                 if (err) {
-                    req.status(500).send(err);
+                    res.status(500).send(err);
                 } else {
                     res.status(200).send(configs);
                 }
@@ -178,26 +180,74 @@ function addPosition(req, gameDb) {
     });
 }
 
-exports.playGame = function(req, res, next) {
-    var gameId = req.body.id;
-    req.models.Game.get(gameId, function(err, gameDb) {
-        if (!gameDb.awayGoals && !gameDb.homeGoals) {
-            req.models.Team.find({
-                name: [gameDb.home, gameDb.away]
-            }, function(err, teams) {
-                var engine = new Engine(gameDb, teams);
-                var result = engine.playGame();
-                gameDb.awayGoals = result.awayGoals;
-                gameDb.homeGoals = result.homeGoals;
-                gameDb.save(function(err) {
-                    if (err) throw err;
-                    addPosition(req, gameDb);
-                    res.status(200).send(gameDb);
-                });
-            });
-        }
+function updateGame(req, res, gameDb, result) {
+    gameDb.awayGoals = result.awayGoals;
+    gameDb.homeGoals = result.homeGoals;
+    gameDb.save(function(err) {
+        if (err) throw err;
+        addPosition(req, gameDb);
+        gameDb.winner = result.winner;
+        res.status(200).send(gameDb);
     });
 }
+
+exports.playGame = function(req, res, next) {
+    var gameId = req.body.id;
+    var final = req.body.final;
+    var double = req.body.double;
+    var number = req.body.number;
+    var edition = req.body.edition;
+    req.models.Game.get(gameId, function(err, gameDb) {
+        if (!gameDb.awayGoals && !gameDb.homeGoals) {
+            async.parallel({
+                    teams: function(callback) {
+                        req.models.Team.find({
+                            name: [gameDb.home, gameDb.away]
+                        }, function(err, teams) {
+                            if (err) {
+                                callback(err);
+                                return;
+                            }
+                            callback(null, teams);
+                        });
+                    },
+                    lastGame: function(callback) {
+                        if (double && final) {
+                            req.models.Round.find({
+                                number: parseInt(number - 1),
+                                edition: edition
+                            }, function(err, roundDb) {
+                                if (err) {
+                                    callback(err);
+                                    return;
+                                }
+                                var games = roundDb[0].games;
+                                for (var key in games) {
+                                    var game = games[key];
+                                    if (game.away == gameDb.home && game.home == gameDb.away) {
+                                        callback(null, game);
+                                        return;
+                                    }
+                                }
+                            });
+                        } else {
+                            callback(null, false);
+                        }
+                    }
+                },
+                function(err, results) {
+                    var engine = new Engine(gameDb, results.teams);
+                    engine.setFinal(final);
+                    engine.setDouble(double);
+                    if (double && final) {
+                        engine.setLastGame(results.lastGame);
+                    }
+                    updateGame(req, res, gameDb, engine.playGame());
+                }
+            );
+        }
+    });
+};
 
 
 var comparePosition = function(one, second) {
@@ -271,10 +321,10 @@ exports.definePosition = function(req, res, next) {
     });
 }
 
-exports.saveWeek = function (req, res, next) {
-    req.models.Season.get(req.body.id, function(err, seasonDb){
+exports.saveWeek = function(req, res, next) {
+    req.models.Season.get(req.body.id, function(err, seasonDb) {
         seasonDb.week = req.body.week;
-        seasonDb.save(function(err){
+        seasonDb.save(function(err) {
             res.status(200).send();
         });
     });

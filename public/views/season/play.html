@@ -26,10 +26,11 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-md-6" ng-if="weekPagination != size">
-                                    <span ng-repeat="round in rounds[value.id]">
+                                    <span ng-repeat="(Kkey, Kvalue) in rounds[value.id]">
+                                        <span ng-if="Kkey != 'double'">
                                         Partidos
                                         <table class="table">
-                                            <tr ng-repeat="game in round.games">
+                                            <tr ng-repeat="game in Kvalue.games">
                                                 <td style="width:45%; text-align:right" >{{game.home}}</td>
                                                 <td style="width:5%;background-color: #eee; border: 1px solid #999; text-align: center;">
                                                     {{game.homeGoals}}
@@ -40,6 +41,7 @@
                                                 <td style="width:45%; text-align:left" >{{game.away}}</td>
                                             </tr>
                                         </table>
+                                        </span>
                                     </span>
                                 </div>
                                 <div class="col-md-6" ng-class="classLastPage()">

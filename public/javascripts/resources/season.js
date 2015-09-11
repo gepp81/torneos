@@ -43,12 +43,15 @@ function SeasonResource($resource) {
 };
 
 function GameResource($resource) {
-    return $resource("/game/:id/:edition", {}, {
+    return $resource("/game/:id/:edition/:number/:double/:final", {}, {
         play: {
             method: 'post',
             data: {
                 id: "@id",
-                edition: "@edition"
+                edition: "@edition",
+                number: "@number",
+                final: "@final",
+                double: "@double"
             }
         }
     });

@@ -3,6 +3,9 @@ var ORDER = 'name';
 var RoundFactory = require("./factory/round.js");
 var async = require('async');
 
+var EDITION_LEAGUE = "LEAGUE";
+var EDITION_CUP = "CUP";
+
 exports.create = function(req, res, next) {
     var tournament = req.body.tournament;
     if (tournament) {
@@ -151,10 +154,34 @@ function createNewPosition(req, editionDb) {
             goals: 0,
             received: 0
         }
-        req.models.Position.create(position, function(err, positionDb){
+        req.models.Position.create(position, function(err, positionDb) {
 
         });
     }
+}
+
+function createLeagueEdition(edition, req, res, tournamentDb) {
+    if (edition.type === EDITION_LEAGUE) {
+        edition.size = req.body.double ? (edition.teams.length - 1) * 2 : (edition.teams.length - 1);
+    }
+    if (edition.type === EDITION_CUP) {
+        var count = 1;
+        while (Math.pow(2, count) < edition.teams.length) {
+            count++;
+        }
+        console.log(count);
+        edition.size = req.body.double ? count * 2 : count;
+    }
+    req.models.Edition.create(edition, function(err, editionDb) {
+        if (err) {
+            res.status(500).send({
+                error: 'Error to update the value.'
+            });
+        } else {
+            createNewPosition(req, editionDb);
+            setupEdition(req, res, tournamentDb, editionDb);
+        }
+    });
 }
 
 exports.addEdition = function(req, res, next) {
@@ -167,18 +194,9 @@ exports.addEdition = function(req, res, next) {
         } else {
             edition.league = tournamentDb.id;
             edition.leagueName = tournamentDb.name;
-            edition.size = req.body.double ? (edition.teams.length - 1) * 2 : (edition.teams.length - 1); //if league
             edition.playing = 1;
-            req.models.Edition.create(edition, function(err, editionDb) {
-                if (err) {
-                    res.status(500).send({
-                        error: 'Error to update the value.'
-                    });
-                } else {
-                    createNewPosition(req, editionDb);
-                    setupEdition(req, res, tournamentDb, editionDb);
-                }
-            });
+            edition.double = req.body.double;
+            createLeagueEdition(edition, req, res, tournamentDb);
         }
     });
 }
@@ -197,7 +215,7 @@ exports.getEditions = function(req, res, next) {
 
 exports.getLastEdition = function(req, res, next) {
     req.models.Edition.find({
-        league: req.params.tournament, 
+        league: req.params.tournament,
         id: req.params.lastEdition
     }, function(err, edition) {
         if (err) {
@@ -211,7 +229,7 @@ exports.getLastEdition = function(req, res, next) {
 exports.getFixture = function(req, res, next) {
     req.models.Round.find({
         edition: req.params.edition
-    }, function(err, rounds) {
+    }).order('number').run(function(err, rounds) {
         if (err) {
             res.status(500).send(err);
         } else {

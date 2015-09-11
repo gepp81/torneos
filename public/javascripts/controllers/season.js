@@ -79,7 +79,7 @@ function SeasonNewController($scope, $modal, $state, $stateParams, SeasonTournam
 
 }
 
-function SeasonPlayController($scope, $modal, $state, Season, Application, Round, Game, Position) {
+function SeasonPlayController($scope, $modal, $state, $q, Season, Application, Round, Game, Position) {
 
     var hasTies = function(positions) {
         for (var i = 0; i < positions.length; i++) {
@@ -168,29 +168,40 @@ function SeasonPlayController($scope, $modal, $state, Season, Application, Round
     }
 
     $scope.playWeek = function(round) {
-        Season.saveWeek({
-            week: $scope.weekPagination + 1,
-            id: $scope.season.id
-        }, function(data) {}, function(err) {
 
-        });
+        if (!$scope.winners)
+            $scope.winners = new Array();
+
         angular.forEach(round, function(eValue, eKey) {
             if (round[eKey].rounds) {
                 angular.forEach(round[eKey].rounds.games, function(value, key) {
                     if (round[eKey].rounds.games[key].homeGoals === null && round[eKey].rounds.games[key].awayGoals === null) {
-                        Game.play({
-                            id: round[eKey].rounds.games[key].id,
-                            edition: round[eKey].rounds.edition
-                        }, function(data) {
-                            round[eKey].rounds.games[key] = data;
-                        }, function(err) {
-
-                        });
+                        if (round[eKey].rounds.games[key].home !== null && round[eKey].rounds.games[key].away !== null) {
+                            Game.play({
+                                id: round[eKey].rounds.games[key].id,
+                                edition: round[eKey].rounds.edition,
+                                final: round[eKey].rounds.final,
+                                double: round[eKey].double,
+                                number: round[eKey].rounds.number,
+                            }, function(data) {
+                                round[eKey].rounds.games[key] = data;
+                                if (round[eKey].rounds.final) {
+                                    if (!$scope.winners[round[eKey].rounds.edition]) {
+                                        $scope.winners[round[eKey].rounds.edition] = new Array();
+                                    }
+                                    $scope.winners[round[eKey].rounds.edition].push(data.winner);
+                                }
+                            }, function(err) {
+                                $scope.canPlay = true;
+                            });
+                        }
                     }
                 });
             }
         });
-    }
+        
+        $scope.canPlay = false;
+    };
 
     $scope.defineLeague = function(positions, edition) {
         Position.define({
@@ -231,6 +242,10 @@ function SeasonPlayController($scope, $modal, $state, Season, Application, Round
         }
         return '';
     }
+    
+    $scope.canCreateRound = function () {
+        return $scope.winners;
+    }    
 
 
     getSeason();
