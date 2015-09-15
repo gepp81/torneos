@@ -1,5 +1,6 @@
 var LIMIT = 20;
 var ORDER = 'name';
+var async = require("async");
 
 exports.create = function(req, res, next) {
     var team = req.body.team;
@@ -61,21 +62,39 @@ exports.getAllTeams = function(req, res, next) {
 };
 
 exports.getAll = function(req, res, next) {
-    var page = 1;
-    if (req.params.page) {
-        page = req.params.page;
-    }
-    page = (page - 1) * LIMIT;
-    req.models.Team.find().order(ORDER).limit(LIMIT).offset(page).run(function(err, teams) {
-        if (err) {
-            res.status(500).send("errorrrr pq no definio un team");
-        } else {
-            res.status(200).send({
-                teams: teams,
-                total: 20
-            });
-        }
-    });
+    async.parallel({
+            teams: function(callback) {
+                var page = 1;
+                var limit = parseInt(req.params.size);
+                if (req.params.page) {
+                    page = req.params.page;
+                }
+                page = (page - 1) * limit;
+                console.log(req.params.size);
+                req.models.Team.find().order(ORDER).limit(limit).offset(page).run(function(err, teams) {
+                    if (err) {
+                        callback(err);
+                        return;
+                    }
+                    callback(null, teams);
+                });
+            },
+            total: function(callback) {
+                req.models.Team.count(function(err, totalItems) {
+                    if (err) {
+                        callback(err);
+                    }
+                    callback(null, totalItems);
+                });
+            }
+        },
+        function(err, results) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                res.status(200).send(results);
+            }
+        })
 };
 
 exports.update = function(req, res, next) {

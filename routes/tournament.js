@@ -143,7 +143,8 @@ function setupEdition(req, res, tournamentDb, editionDb) {
 }
 
 function createNewPosition(req, editionDb) {
-    for (var i = editionDb.teams.length - 1; i >= 0; i--) {
+    var length = editionDb.teams.length;
+    for (var i = length - 1; i >= 0; i--) {
         var position = {
             edition: editionDb.id,
             team: editionDb.teams[i],
@@ -153,6 +154,9 @@ function createNewPosition(req, editionDb) {
             lose: 0,
             goals: 0,
             received: 0
+        }
+        if (editionDb.type === EDITION_CUP) {
+            position.final = length;
         }
         req.models.Position.create(position, function(err, positionDb) {
 
@@ -169,7 +173,6 @@ function createLeagueEdition(edition, req, res, tournamentDb) {
         while (Math.pow(2, count) < edition.teams.length) {
             count++;
         }
-        console.log(count);
         edition.size = req.body.double ? count * 2 : count;
     }
     req.models.Edition.create(edition, function(err, editionDb) {

@@ -1,8 +1,11 @@
 function TeamController($scope, $modal, Teams) {
+    
+    var sizeByPage = 10;
 
     var getTeams = function(page) {
         Teams.getAll({
-            page: page
+            page: page,
+            size: 10
         }, function(data) {
             if (data.teams.length > 0) {
                 $scope.teams = data.teams;

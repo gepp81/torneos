@@ -64,7 +64,9 @@ exports.createSeason = function(req, res, next) {
                     configs[value] = {
                         id: editionDb[0].id,
                         size: editionDb[0].size,
-                        double: editionDb[0].double
+                        startWeek: editionDb[0].startWeek,
+                        double: editionDb[0].double,
+                        type: editionDb[0].type
                     };
                     callback();
                 })
@@ -80,7 +82,7 @@ exports.createSeason = function(req, res, next) {
                     var max = 0;
                     for (var i in configs) {
                         var item = configs[i];
-                        max = max < item.size ? item.size : max;
+                        max = max < item.size + item.startWeek - 1 ? item.size + item.startWeek - 1 : max;
                     }
                     season.size = max;
                     req.models.Season.create(season, function(err, seasonDb) {
@@ -102,7 +104,7 @@ exports.getRound = function(req, res, next) {
         async.forEachOf(editions, function(value, key, callback) {
                 req.models.Round.find({
                     edition: value.id,
-                    number: req.body.week
+                    number: req.body.week - value.startWeek + 1
                 }).order('number').run(function(err, rounds) {
                     if (err) return callback(err);
                     configs[value.id] = {
@@ -320,11 +322,6 @@ exports.saveWeek = function(req, res, next) {
     });
 }
 
-
-
-
-
-
 function updateGame(req, res, gameDb, result) {
     gameDb.awayGoals = result.awayGoals;
     gameDb.homeGoals = result.homeGoals;
@@ -335,8 +332,6 @@ function updateGame(req, res, gameDb, result) {
 
     });
 }
-
-
 
 exports.playGames = function(req, res, next) {
     var final = req.body.final;
@@ -399,13 +394,14 @@ exports.playGames = function(req, res, next) {
                             callback();
                         }
                     );
+                } else {
+                    res.status(500).send({});
                 }
             },
             function(err) {
                 if (!final) {
                     res.status(200).send({});
                 } else {
-                    console.log(winners.length);
                     if (winners.length > 0) {
                         generateNextRound(req, res, winners, edition, number, double);
                     }
@@ -418,6 +414,20 @@ exports.playGames = function(req, res, next) {
 function generateNextRound(req, res, winners, edition, number, double) {
     var number = number + 1;
 
+    req.models.Position.find({
+        edition: edition,
+        team: winners
+    }, function(err, positionsDb) {
+        for (var i in positionsDb) {
+            var position = positionsDb[i];
+            position.final--;
+            position.save(function(err) {
+
+            });
+        }
+    });
+
+
     req.models.Round.find({
             edition: edition,
             number: parseInt(number)
@@ -429,12 +439,12 @@ function generateNextRound(req, res, winners, edition, number, double) {
                     gamesDb[i].home = winners[i];
                     gamesDb[i].away = winners[i + 1];
                 }
-console.log("1");
+
                 for (var key in gamesDb) {
                     var gameDb = gamesDb[key];
-                    console.log("2");
+
                     gameDb.save(function(err) {
-console.log("3");
+
                     })
                 }
 

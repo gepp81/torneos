@@ -84,6 +84,8 @@ function TournamentSaveController($scope, $modalInstance, TournamentSave, tourna
 function TournamentEditionController($scope, $state, $stateParams, Team, Edition) {
     $scope.item = $stateParams.item;
     $scope.selectedItems = new Array();
+    
+    $scope.startWeek = 1;
 
     $scope.addToList = function(item) {
         var index = $scope.selectedItems.indexOf(item);
@@ -126,7 +128,8 @@ function TournamentEditionController($scope, $state, $stateParams, Team, Edition
                 edition: {
                     teams: $scope.selectedItems,
                     size: $scope.selectedOption,
-                    type: $scope.type
+                    type: $scope.type,
+                    startWeek: $scope.startWeek
                 },
                 double: $scope.double
             },

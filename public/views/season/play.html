@@ -20,7 +20,7 @@
                 <accordion-group ng-repeat="(key, value) in editions" is-open="true" 
                                  ng-show="rounds[value.id].rounds.games.length > 0 || weekPagination == size">
                     <accordion-heading>
-                        <h4>{{key}} > {{value.id}}</h4>
+                        <h4>{{key}} > {{value.id}} > {{editions[key].type}}</h4>
                     </accordion-heading>
                     <div class="panel panel-default">
                         <div class="panel-body">
@@ -61,8 +61,14 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr ng-repeat="item in positions[value.id].positions | 
+                                            <span ng-if="editions[key].type == 'CUP'">
+                                                <tr ng-repeat="item in positions[value.id].positions | 
+                                                               orderBy:['final', '-points', '-dg', 'goals', 'final']">
+                                            </span>
+                                            <span ng-if="editions[key].type == 'LEAGUE'">
+                                                <tr ng-repeat="item in positions[value.id].positions | 
                                                                orderBy:['-points', '-dg', 'goals', 'final']">
+                                            </span>
                                                 <td class="alignCenter">
                                                     <label ng-class="getColorPosition($index + 1)">{{$index + 1}}</label>
                                                 </td>

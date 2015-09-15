@@ -46,10 +46,8 @@
             </table>
             <div style="text-align: center">
                 <pagination class="pagination" total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" 
-                        previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último"></pagination>
-                <div>
-                    <span nf-if="totalItems > 0">{{getPaginationInfo()}}</span>                
-                </div>
+                        previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último"  
+                            items-per-page="10"></pagination>
             </div>
 
         </div>

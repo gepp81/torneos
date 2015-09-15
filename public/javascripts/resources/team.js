@@ -1,9 +1,10 @@
 function TeamsResource($resource) {
-    return $resource("/team/getAll/:page", {}, {
+    return $resource("/team/getAll/:page/:size", {}, {
         getAll: {
             method: 'GET',
             params: {
-                page: "@page"
+                page: "@page",
+                size: "@size"
             }
         }
     });

@@ -60,6 +60,7 @@ function SeasonNewController($scope, $modal, $state, $stateParams, SeasonTournam
         if (index == -1) {
             $scope.selectedItems.push(item);
         }
+        $scope.tournamentSelected = '';
     }
 
     $scope.remover = function(item) {
@@ -144,7 +145,8 @@ function SeasonPlayController($scope, $modal, $state, $q, Season, Application, R
                         $scope.editions = data.editions;
                         $scope.size = data.size + 1;
                         $scope.weekPagination = data.week;
-                        getRound(data.editions, data.week);
+                        $scope.playedWeek = data.week;
+                        //getRound(data.editions, data.week);
                         $scope.weekChanged();
                     },
                     function(err) {
@@ -168,24 +170,16 @@ function SeasonPlayController($scope, $modal, $state, $q, Season, Application, R
     }
 
     $scope.playWeek = function(round) {
-
         angular.forEach(round, function(eValue, eKey) {
             if (round[eKey].rounds) {
-//                angular.forEach(round[eKey].rounds.games, function(value, key) {
-  //                  if (round[eKey].rounds.games[key].homeGoals === null && round[eKey].rounds.games[key].awayGoals === null) {
-    //                    if (round[eKey].rounds.games[key].home !== null && round[eKey].rounds.games[key].away !== null) {
-                            Game.playGames({
-                                edition: round[eKey].rounds.edition,
-                                final: round[eKey].rounds.final,
-                                double: round[eKey].double,
-                                number: round[eKey].rounds.number,
-                            }, function(data) {
-                                 getRound($scope.editions, $scope.weekPagination);
-                            }, function(err) {
-                            });
-      //                  }
-        //            }
-//              /  });
+                Game.playGames({
+                    edition: round[eKey].rounds.edition,
+                    final: round[eKey].rounds.final,
+                    double: round[eKey].double,
+                    number: round[eKey].rounds.number,
+                }, function(data) {
+                    getRound($scope.editions, $scope.weekPagination);
+                }, function(err) {});
             }
         });
     };
@@ -229,12 +223,18 @@ function SeasonPlayController($scope, $modal, $state, $q, Season, Application, R
         }
         return '';
     }
-    
-    $scope.canCreateRound = function () {
-        return $scope.winners;
-    }    
 
+    $scope.canCreateRound = function() {
+        return $scope.winners;
+    }
 
     getSeason();
+
+    $scope.canPlay = function() {
+        if ($scope.weekPagination) {
+            return $scope.weekPagination >= $scope.playedWeek ? true : false;
+        }
+        return false;
+    }
 
 }

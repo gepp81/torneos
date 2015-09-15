@@ -57,7 +57,7 @@ router.post('/team', routesTeam.create);
 router.put('/team', routesTeam.update);
 router.get('/team', routesTeam.getAllTeams);
 router.get('/team/:id', routesTeam.get);
-router.get('/team/getAll/:page', routesTeam.getAll);
+router.get('/team/getAll/:page/:size', routesTeam.getAll);
 
 router.post('/tournament', routesTournament.create);
 router.put('/tournament', routesTournament.update);

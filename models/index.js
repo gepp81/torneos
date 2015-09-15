@@ -21,7 +21,8 @@ module.exports = function(db, models) {
         size: 'integer',
         playing: 'integer',
         type: 'text',
-        double: 'boolean'
+        double: 'boolean',
+        startWeek: 'integer'
     });
 
     models.Position = db.define("position", {
