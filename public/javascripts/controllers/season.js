@@ -27,11 +27,15 @@ function SeasonController($scope, $modal, $state, Seasons, Application) {
     $scope.setDefault = function(item) {
         Application.save({
             season: item
-        }, function(data) {
+        }, function(data) {}, function(error) {});
+    }
 
-        }, function(error) {
-
-        });
+    $scope.getTournaments = function(editions) {
+        var tours = new Array();
+        for (var i in editions) {
+            tours.push(i);
+        }
+        return tours;
     }
 }
 
@@ -50,9 +54,7 @@ function SeasonNewController($scope, $modal, $state, $stateParams, SeasonTournam
             function(data) {
                 $state.go('season');
             },
-            function(err) {
-
-            });
+            function(err) {});
     }
 
     $scope.addToList = function(item) {
@@ -80,7 +82,7 @@ function SeasonNewController($scope, $modal, $state, $stateParams, SeasonTournam
 
 }
 
-function SeasonPlayController($scope, $modal, $state, $q, Season, Application, Round, Game, Position) {
+function SeasonPlayController($scope, $modal, $state, $localStorage, Season, Application, Round, Game, Position) {
 
     var hasTies = function(positions) {
         for (var i = 0; i < positions.length; i++) {
@@ -112,9 +114,7 @@ function SeasonPlayController($scope, $modal, $state, $q, Season, Application, R
                 $scope.ties[key] = hasTies(value.positions);
             });
             $scope.positions = data;
-        }, function(err) {
-
-        });
+        }, function(err) {});
     }
 
     var getRound = function(editions, week) {
@@ -123,12 +123,14 @@ function SeasonPlayController($scope, $modal, $state, $q, Season, Application, R
             week: week
         }, function(data) {
             $scope.rounds = data;
-        }, function(err) {
-
-        });
+        }, function(err) {});
     }
 
     $scope.weekChanged = function() {
+        if ($localStorage.week) {
+            $scope.weekPagination = $localStorage.week;
+            delete $localStorage.week;
+        }
         if ($scope.weekPagination != $scope.size)
             getRound($scope.editions, $scope.weekPagination);
         getPositions($scope.editions);
@@ -146,16 +148,11 @@ function SeasonPlayController($scope, $modal, $state, $q, Season, Application, R
                         $scope.size = data.size + 1;
                         $scope.weekPagination = data.week;
                         $scope.playedWeek = data.week;
-                        //getRound(data.editions, data.week);
                         $scope.weekChanged();
                     },
-                    function(err) {
-
-                    });
+                    function(err) {});
             },
-            function(err) {
-
-            });
+            function(err) {});
     }
 
     $scope.playGames = function(games) {
@@ -199,22 +196,12 @@ function SeasonPlayController($scope, $modal, $state, $q, Season, Application, R
         });
     }
 
-    $scope.getColorPosition = function(pos) {
-        var classLabel = 'label label-';
-        if (pos == 1) {
-            return classLabel + 'primary';
-        }
-        if (pos == 2) {
-            return classLabel + 'info';
-        }
-        if (pos == 3) {
-            return classLabel + 'success';
-        }
-        return '';
-    }
-
     $scope.getPoints = function(position) {
         return position.win * 3 + position.tie;
+    }
+
+    $scope.canCreateRound = function() {
+        return $scope.winners;
     }
 
     $scope.classLastPage = function() {
@@ -224,17 +211,45 @@ function SeasonPlayController($scope, $modal, $state, $q, Season, Application, R
         return '';
     }
 
-    $scope.canCreateRound = function() {
-        return $scope.winners;
+    $scope.getTextPosition = function(position) {
+        if ($scope.weekPagination != $scope.size) {
+            return position;
+        } else {
+            if (position === 1) {
+                return "Campeón";
+            }
+            if (position === 2) {
+                return "Subcampeón";
+            }
+            if (position === 3) {
+                return "Tercero";
+            }
+        }
+        return position;
+    }
+
+    $scope.getColorPosition = function(pos) {
+        if ($scope.weekPagination != $scope.size) {
+            return '';
+        } else {
+            var classLabel = 'label label-position label-position-';
+            if (pos == 1) {
+                return classLabel + 'gold';
+            }
+            if (pos == 2) {
+                return classLabel + 'silver';
+            }
+            if (pos == 3) {
+                return classLabel + 'brown';
+            }
+        }
+        return '';
     }
 
     getSeason();
 
-    $scope.canPlay = function() {
-        if ($scope.weekPagination) {
-            return $scope.weekPagination >= $scope.playedWeek ? true : false;
-        }
-        return false;
-    }
+    $scope.$on("$destroy", function() {
+        $localStorage.week = $scope.weekPagination;
+    });
 
 }

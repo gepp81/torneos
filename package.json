@@ -19,7 +19,7 @@
     "mime-types": "^2.1.4",
     "moment": "^2.10.6",
     "morgan": "~1.5.3",
-    "mysql": "~2.7.0",
+    "mysql": "~2.9.0",
     "ngstorage": "^0.3.6",
     "node-inspector": "^0.12.2",
     "orm": "~2.1.26",

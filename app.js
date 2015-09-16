@@ -26,7 +26,6 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-
 // Load Models DB
 app.use(orm.express(settings.database, {
     define: function(db, models, next) {
@@ -56,7 +55,7 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
-        console.error(err);
+
         return res.status(500).send({
             error: "Cant Connect"
         });

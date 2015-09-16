@@ -6,7 +6,7 @@
         <div class="panel-heading">
             <div class="input-group width70">
                     <button class="btn btn-info" type="button" ng-click="newSeason()"> 
-                        &nbsp;Nuevo&nbsp;</button>                    
+                        &nbsp;Nuevo&nbsp;</button>
                 </span>
             </div>
         </div>
@@ -14,29 +14,27 @@
         <div>
             <table class="table">
                 <thead>
-                    <th class="width50">Temporada</th>
-                    <th>Estado</span></th>
-                    <th></span></th>            
-                    <th>Editar</span></th>
-                    <th>Eliminar</span></th>
+                    <th>Temporada</th>
+                    <th>Estado</th>
+                    <th>Torneos</th>
+                    <th>Acciones</th>
                 </thead>
                 <tbody>
                     <tr ng-repeat="item in seasons">
                         <td class="paddingLeftOnePercent">{{item.id}}</td>
                         <td class="paddingLeftOnePercent">{{item.status}}</td>
+                        <td class="paddingLeftOnePercent">{{getTournaments(item.editions)}}</td>
                         <td>
                             <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal" 
                                     ng-click="setDefault(item)" ng-click="">
                                 Iniciar
                             </button>
-                        </td>                        
-                        <td>
-                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal"  
-                                    ng-click="">Editar
+                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal" ng-click=""
+                                    ng-disabled="true" disabled="disabled">
+                                Editar
                             </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#removeModal" ng-click="">
+                            <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#removeModal" ng-click=""
+                                    ng-disabled="true" disabled="disabled">
                                 Eliminar
                             </button>
                         </td>
@@ -47,7 +45,7 @@
                 <pagination class="pagination" total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" 
                         previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último"></pagination>
                 <div>
-                    <span nf-if="totalItems > 0">{{getPaginationInfo()}}</span>                
+                    <span nf-if="totalItems > 0">{{getPaginationInfo()}}</span>
                 </div>
             </div>
         </div>

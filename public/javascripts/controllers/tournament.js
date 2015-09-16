@@ -169,9 +169,16 @@ function EditionController($scope, $state, $stateParams, Edition) {
     $scope.getFixture = function(item) {
         $state.go('getFixture', {
             item: item,
-            name: $scope.item.name
+            name: $scope.item.name,
+            season: $scope.item
         });
     }
+    
+    $scope.cancel = function(item) {
+        $state.go('tournament', {
+            item: item
+        });
+    }    
 
     var getEditions = function() {
         Edition.getAll({
@@ -191,6 +198,7 @@ function EditionController($scope, $state, $stateParams, Edition) {
 
 function FixtureController($scope, $state, $stateParams, Fixture) {
     $scope.edition = $stateParams.item;
+    $scope.season = $stateParams.season;
     $scope.league = $stateParams.name;
 
     var getFixture = function() {
@@ -200,6 +208,12 @@ function FixtureController($scope, $state, $stateParams, Fixture) {
             $scope.fixture = data;
         }, function(err) {
             console.error("No recupero datos");
+        });
+    }
+    
+    $scope.cancel = function(item) {
+        $state.go('edition', {
+           item: $scope.season 
         });
     }
 

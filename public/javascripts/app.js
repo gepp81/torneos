@@ -1,4 +1,4 @@
-var app = angular.module('Torneos', ['ngResource', 'ui.router', 'ui.bootstrap'])
+var app = angular.module('Torneos', ['ngResource', 'ui.router', 'ui.bootstrap', 'ngStorage'])
     .config(function($urlRouterProvider, $stateProvider) {
         // Parametros de configuración
         $urlRouterProvider.otherwise('/home');
@@ -49,7 +49,8 @@ var app = angular.module('Torneos', ['ngResource', 'ui.router', 'ui.bootstrap'])
                 url: "/getFixture",
                 params: {
                     item: null,
-                    name: null
+                    name: null,
+                    season: null
                 },
                 templateUrl: "views/edition/fixture.html"
             });

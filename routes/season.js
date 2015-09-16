@@ -6,10 +6,7 @@ var Engine = require('./engine/engine.js');
 exports.getSeason = function(req, res, next) {
     async.parallel({
             seasons: function(callback) {
-                var page = 1;
-                if (req.params.page) {
-                    page = req.params.page;
-                }
+                var page = req.params.page ? req.params.page : 1;
                 page = (page - 1) * LIMIT;
                 req.models.Season.find().order(ORDER).limit(LIMIT).offset(page).run(function(err, seasons) {
                     if (err) {
@@ -53,9 +50,7 @@ exports.get = function(req, res, next) {
 exports.createSeason = function(req, res, next) {
     var tournaments = req.body.tournaments;
     if (tournaments) {
-
         var configs = {};
-
         async.forEachOf(tournaments, function(value, key, callback) {
                 req.models.Edition.find({
                     leagueName: value

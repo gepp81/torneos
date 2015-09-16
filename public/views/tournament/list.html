@@ -11,20 +11,17 @@
                     <button class="btn btn-primary" type="button" ng-click="search()"> 
                         &nbsp;Buscar&nbsp;</button>
                     <button class="btn btn-info" type="button" ng-click="open('lg', null)"> 
-                        &nbsp;Nuevo&nbsp;</button>                    
+                        &nbsp;Nuevo&nbsp;</button>
                 </span>
             </div>
         </div>
-        
         <!-- Table -->
         <div>
             <table class="table">
                 <thead>
-                    <th class="width50">Nombre</th>
+                    <th>Nombre</th>
                     <th>Edición Actual</th>
-                    <th>Editar</span></th>
-                    <th>Crear Edición</span></th>
-                    <th>Eliminar</span></th>
+                    <th>Acciones</th>
                 </thead>
                 <tbody>
                     <!--tr ng-repeat="item in dependenciesList | filter: {id:searchProcess}"-->
@@ -36,14 +33,11 @@
                                     ng-click="open('lg', item)">
                                 Editar
                             </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-info btn-sm" ng-click="listEditions(item)">
+                            <button class="btn btn-warning btn-sm" ng-click="listEditions(item)">
                                 Ediciones
                             </button>
-                        </td>                        
-                        <td>
-                            <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#removeModal" ng-click="remove(item)">
+                            <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#removeModal" ng-click="remove(item)"
+                                    ng-disabled="true" disabled="disabled">
                                 Eliminar
                             </button>
                         </td>
@@ -54,10 +48,9 @@
                 <pagination class="pagination" total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()" 
                         previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último"></pagination>
                 <div>
-                    <span nf-if="totalItems > 0">{{getPaginationInfo()}}</span>                
+                    <span nf-if="totalItems > 0">{{getPaginationInfo()}}</span>
                 </div>
             </div>
-
         </div>
     </div>
 </section>

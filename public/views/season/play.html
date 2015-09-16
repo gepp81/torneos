@@ -70,7 +70,9 @@
                                                                orderBy:['-points', '-dg', 'goals', 'final']">
                                             </span>
                                                 <td class="alignCenter">
-                                                    <label ng-class="getColorPosition($index + 1)">{{$index + 1}}</label>
+                                                    <label ng-class="getColorPosition($index + 1)">
+                                                        {{getTextPosition($index + 1)}}
+                                                    </label>
                                                 </td>
                                                 <td>{{item.team}}</td>
                                                 <td>{{item.points}}</td>

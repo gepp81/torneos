@@ -3,7 +3,11 @@
         <div class="panel-heading">
             <h4>Fixture - Liga: <b>{{league}}</b> / Edición <b>{{edition.id}}</b></h4>
         </div>
-        
+        <div class="alignCenter">
+            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#removeModal" ng-click="cancel(item)">
+                Volver
+            </button>
+        </div>
         <!-- Table -->
         <div class="width50 marginAuto">
             <table class="table" ng-repeat="item in fixture">
@@ -15,14 +19,18 @@
                         <td class="width30">
                             {{game.home}}
                         </td>
-                        <td ng-if="game.homeGoals && game.awayGoals">{{game.homeGoals}} - {{game.awayGoals}}</td>
-                        <td ng-if="!(game.homeGoals && game.awayGoals)" class="width30">vs.</td>
+                        <td>{{game.homeGoals}} - {{game.awayGoals}}</td>
                         <td class="width30">
                             {{game.away}}
-                        </td>  
+                        </td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="alignCenter">
+            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#removeModal" ng-click="cancel(item)">
+                Volver
+            </button>
         </div>
     </div>
 </section>

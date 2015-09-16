@@ -18,7 +18,7 @@
                                 <label for="checkRepeat"></label>
                             </div>
                         </span>
-                    </div>          
+                    </div>
                     <div class="input-group width100" ng-show="!repeat">
                         <span class="input-group-addon width30" id="basic-addon1">
                             Total de Equipos
@@ -35,16 +35,16 @@
                         <span class="form-control">
                             <div class="checkbox checkbox-primary">
                                 <input id="checkDouble" type="checkbox" class="styled" ng-model="double"/>
-                                <label for="checkDouble"></label>                                
+                                <label for="checkDouble"></label>
                             </div>
                         </span>
                     </div>
                     <div class="input-group width100">
                         <span class="input-group-addon width30" id="basic-addon1">
                             Empieza
-                        </span>                
+                        </span>
                         <input type="number" class="form-control" ng-model="startWeek" aria-describedby="basic-addon1" />
-                    </div>                    
+                    </div>
                     <div class="input-group width100">
                         <span class="input-group-addon width30" id="basic-addon1">
                             Tipo
@@ -61,9 +61,9 @@
                             <div class="radio radio-primary radio-inline">
                                 <input type="radio" id="inlineRadio3" value="MIX" name="radioInline" ng-model="type">
                                 <label for="inlineRadio3">Mixto</label>
-                            </div>                            
+                            </div>
                         </span>
-                    </div>                    
+                    </div>
                     <div class="input-group width100" ng-show="!repeat">
                         <span class="input-group-addon width30" id="basic-addon1">
                             Agregar
@@ -72,7 +72,6 @@
                                typeahead="team.name for team in teams | filter:$viewValue | limitTo:8" 
                                class="form-control" typeahead-on-select="addToList(teamSelected)">
                     </div>
-
                     <h4>Equipos Agregados</h4>
                     <table>
                         <tr ng-repeat="item in selectedItems">
@@ -84,7 +83,6 @@
                             </td>
                         </tr>
                     </table>
-
                     <input type="hidden" class="form-control" name="id" ng-model="tournament.id" aria-describedby="basic-addon1">
                     <br/>
                     <div class="input-group width100 alignCenter">

@@ -4,27 +4,20 @@ var async = require("async");
 
 exports.create = function(req, res, next) {
     var team = req.body.team;
-    if (team) {
-        var error = false;
-        if (!team.name) {
-            error = true;
-        }
+    if (team && team.name) {
         var skill = team.skill.split(",");
-        if (skill.length != 10) {
-            error = true;
-        }
-        if (!error) {
+        if (skill.length == 10) {
             req.models.Team.create(team, function(err, teamDb) {
                 if (err) {
-                    res.status(500).send(err);
+                    next(err);
                 }
                 res.status(200).send(teamDb);
             });
         } else {
-            res.status(500).send("errorrrr");
+            throw new Error("No hay 10 skills");
         }
     } else {
-        res.status(500).send("errorrrr pq no definio un team");
+        throw new Error("No se definio un equipo");
     }
 };
 
@@ -32,7 +25,7 @@ exports.get = function(req, res, next) {
     if (req.params.id) {
         req.models.Team.get(req.params.id, function(err, teamDb) {
             if (err) {
-                res.status(500).send("errorrrr pq no definio un team");
+                next(err);
             } else {
                 res.status(200).send(teamDb);
             }
@@ -43,7 +36,7 @@ exports.get = function(req, res, next) {
             },
             function(err, teamDb) {
                 if (err) {
-                    res.status(500).send("errorrrr pq no definio un team");
+                    next(err);
                 } else {
                     res.status(200).send(teamDb[0]);
                 }
@@ -54,7 +47,7 @@ exports.get = function(req, res, next) {
 exports.getAllTeams = function(req, res, next) {
     req.models.Team.find({}, function(err, teams) {
         if (err) {
-            res.status(500).send("Error al recuperar todos los equipos");
+            next(err);
         } else {
             res.status(200).send(teams);
         }
@@ -90,7 +83,7 @@ exports.getAll = function(req, res, next) {
         },
         function(err, results) {
             if (err) {
-                res.status(500).send(err);
+                next(err);
             } else {
                 res.status(200).send(results);
             }
@@ -99,34 +92,24 @@ exports.getAll = function(req, res, next) {
 
 exports.update = function(req, res, next) {
     var team = req.body.team;
-    if (team) {
-        var error = false;
-        if (!team.name || !team.id) {
-            error = true;
-        }
+    if (team && team.name && team.id) {
         var skill = team.skill.split(",");
-        if (skill.length != 10) {
-            error = true;
-        }
-        if (!error) {
+        if (skill.length == 10) {
             req.models.Team.get(team.id, function(err, teamDb) {
                 if (err) {
                     res.status(500).send("errorrrr pq no definio un team");
                 } else {
                     teamDb.save(team, function(err) {
                         if (err) {
-                            res.status(500).send({
-                                error: 'Error to update the value.'
-                            });
+                            next(err);
                         } else {
                             res.status(200).send(teamDb);
                         }
                     });
-
                 }
             });
         } else {
-            res.status(500).send("errorrrr pq no definio un team");
+            throw new Error("No definio un equipo.");
         }
     }
 }

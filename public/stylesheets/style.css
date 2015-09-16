@@ -2,12 +2,14 @@ body {
     padding: 0.5%;
 }
 
+
 /** Bibliografia **/
 
 .bibliography-download {
     width: 1.4em;
     height: 1.4em;
 }
+
 
 /** Auth **/
 
@@ -21,6 +23,7 @@ body {
     margin-top: 5%;
 }
 
+
 /**
  * Dependencies View
  */
@@ -30,6 +33,7 @@ body {
     width: 95%;
     margin-top: 1%;
 }
+
 
 /** Widths **/
 
@@ -48,6 +52,7 @@ body {
 .width30 {
     width: 30%!important;
 }
+
 
 /** Margin y padding **/
 
@@ -80,7 +85,30 @@ body {
     margin: auto;
 }
 
-.radio, .checkbox {
+.radio,
+.checkbox {
     margin-top: 0px!important;
     margin-bottom: 0px!important;
+}
+
+
+/* Butons custom */
+
+.label-position {
+    font-size: 0.9em!important;
+    display: block!important;
+    width: 100%;
+}
+
+.label-position-gold {
+    background-color: goldenrod;
+    font-size: 1em!important;
+}
+
+.label-position-silver {
+    background-color: silver;
+}
+
+.label-position-brown {
+    background-color: brown;
 }

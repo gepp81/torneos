@@ -11,19 +11,17 @@
                     <button class="btn btn-primary" type="button" ng-click="search()"> 
                         &nbsp;Buscar&nbsp;</button>
                     <button class="btn btn-info" type="button" ng-click="open('lg', null)"> 
-                        &nbsp;Nuevo&nbsp;</button>                    
+                        &nbsp;Nuevo&nbsp;</button>
                 </span>
             </div>
         </div>
-        
         <!-- Table -->
         <div>
             <table class="table">
                 <thead>
-                    <th class="width50">Nombre</th>
+                    <th class="width30">Nombre</th>
                     <th>Habilidades</th>
-                    <th>Editar</span></th>
-                    <th>Eliminar</span></th>
+                    <th>Acciones</th>
                 </thead>
                 <tbody>
                     <!--tr ng-repeat="item in dependenciesList | filter: {id:searchProcess}"-->
@@ -31,13 +29,11 @@
                         <td class="paddingLeftOnePercent">{{item.name}}</td>
                         <td class="paddingLeftOnePercent">{{item.skill}}</td>
                         <td>
-                            <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal"  
+                            <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#editModal"  
                                     ng-click="open('lg', item)">
                                 Editar
                             </button>
-                        </td>
-                        <td>
-                            <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#removeModal" ng-click="remove(item)">
+                            <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#removeModal" ng-click="remove(item)">
                                 Eliminar
                             </button>
                         </td>
@@ -49,7 +45,6 @@
                         previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último"  
                             items-per-page="10"></pagination>
             </div>
-
         </div>
     </div>
 </section>
