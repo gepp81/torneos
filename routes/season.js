@@ -1,8 +1,14 @@
 var LIMIT = 20;
-var ORDER = '-id'
+var ORDER = '-id';
+var EDITION_LEAGUE = "LEAGUE";
+var EDITION_CUP = "CUP";
 var async = require('async');
 var Engine = require('./engine/engine.js');
 
+
+/**
+ * Recupera las temporadas
+ */
 exports.getSeason = function(req, res, next) {
     async.parallel({
             seasons: function(callback) {
@@ -37,6 +43,9 @@ exports.getSeason = function(req, res, next) {
         });
 };
 
+/**
+ * Recupera una temporada
+ */
 exports.get = function(req, res, next) {
     req.models.Season.get(req.params.id, function(err, season) {
         if (err) {
@@ -47,6 +56,9 @@ exports.get = function(req, res, next) {
     });
 };
 
+/**
+ * Crea una temporada
+ */
 exports.createSeason = function(req, res, next) {
     var tournaments = req.body.tournaments;
     if (tournaments) {
@@ -92,6 +104,9 @@ exports.createSeason = function(req, res, next) {
     }
 }
 
+/**
+ * Recupera una semana
+ */
 exports.getRound = function(req, res, next) {
     var editions = req.body.editions;
     if (editions) {
@@ -119,7 +134,10 @@ exports.getRound = function(req, res, next) {
     }
 }
 
-exports.getPosition = function(req, res, next) {
+/** 
+ * Recupera las posiciones para X ediciones
+ */
+exports.getPositions = function(req, res, next) {
     var editions = req.body.editions;
     if (editions) {
         var configs = {};
@@ -144,6 +162,39 @@ exports.getPosition = function(req, res, next) {
     }
 }
 
+/**
+ * Obtiene las posiciones para la anterior edicion del torneo.
+ */
+exports.getPositionByTournament = function(req, res, next) {
+    var tournament = req.params.tournament;
+    req.models.Tournament.find({
+        name: tournament
+    }, function(err, tourDb) {
+        if (err) {
+            next(err)
+            return;
+        } else {
+            req.models.Position.find({
+                edition: tourDb[0].editionPlayed
+            }).order('final').limit(parseInt(req.params.number)).run(function(err, posDb) {
+                if (err) {
+                    next(err);
+                    return;
+                } else {
+                    var arr = new Array();
+                    for (var i in posDb) {
+                        arr.push(posDb[i].team);
+                    }
+                    res.status(200).send(arr);
+                }
+            });
+        }
+    });
+}
+
+/**
+ *Actualiza una posicion
+ */
 function savePosition(position, goals, received) {
     position.games++;
     position.goals = parseInt(position.goals) + parseInt(goals);
@@ -160,6 +211,9 @@ function savePosition(position, goals, received) {
     });
 }
 
+/**
+ * Agrega actauliza las posiciones de los equpos para un partido dado
+ */
 function addPosition(req, gameDb) {
     req.models.Position.find({
         edition: req.body.edition,
@@ -177,7 +231,9 @@ function addPosition(req, gameDb) {
     });
 }
 
-
+/**
+ * Juega un partido
+ */
 exports.playGame = function(req, res, next) {
     var gameId = req.body.id;
     var final = req.body.final;
@@ -236,9 +292,10 @@ exports.playGame = function(req, res, next) {
     });
 };
 
-
+/**
+ * Comparador de dos posiciones
+ */
 var comparePosition = function(one, second) {
-
     if (one.points == second.points) {
         if ((one.goals - one.received) == (second.goals - second.received)) {
             if (one.goals == second.goals) {
@@ -254,6 +311,9 @@ var comparePosition = function(one, second) {
     }
 }
 
+/**
+ * Setea los valores finales para las posiciones de una edicion
+ */
 var definePositions = function(req, res, positionDb) {
     positionDb.sort(comparePosition);
 
@@ -272,39 +332,46 @@ var definePositions = function(req, res, positionDb) {
     });
 }
 
+/**
+ * Finaliza las posiciones de una edicion
+ */
+function finalizeSeries(positionsDb, req, res, next) {
+    var teams = new Array();
+    async.eachSeries(positionsDb, function(value, callback) {
+            req.models.Team.find({
+                name: value.team
+            }, function(err, teamDb) {
+                if (err) return callback(err);
+
+                var skills = teamDb[0].skill.split(",");
+                var sum = 0;
+                for (var i = 0; i < skills.length; i++) {
+                    sum = sum + parseInt(skills[i]);
+                }
+                var calculateValue = Math.floor(Math.random() * 100) + sum;
+
+                while (teams.indexOf(value) != -1) {
+                    calculateValue = Math.floor(Math.random() * 100) + sum;
+                }
+                value.valueSum = calculateValue;
+                callback();
+            })
+        },
+        function(err) {
+            if (err) {
+                res.status(500).send(err);
+            } else {
+                definePositions(req, res, positionsDb);
+            }
+        })
+}
+
 exports.definePosition = function(req, res, next) {
     var edition = req.body.edition;
     req.models.Position.find({
         edition: edition
     }, function(err, positionsDb) {
-        var teams = new Array();
-        async.eachSeries(positionsDb, function(value, callback) {
-                req.models.Team.find({
-                    name: value.team
-                }, function(err, teamDb) {
-                    if (err) return callback(err);
-
-                    var skills = teamDb[0].skill.split(",");
-                    var sum = 0;
-                    for (var i = 0; i < skills.length; i++) {
-                        sum = sum + parseInt(skills[i]);
-                    }
-                    var calculateValue = Math.floor(Math.random() * 100) + sum;
-
-                    while (teams.indexOf(value) != -1) {
-                        calculateValue = Math.floor(Math.random() * 100) + sum;
-                    }
-                    value.valueSum = calculateValue;
-                    callback();
-                })
-            },
-            function(err) {
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    definePositions(req, res, positionsDb);
-                }
-            })
+        finalizeSeries(positionsDb, req, res, next);
     });
 }
 
@@ -324,7 +391,6 @@ function updateGame(req, res, gameDb, result) {
         if (err) throw err;
         addPosition(req, gameDb);
         gameDb.winner = result.winner;
-
     });
 }
 
@@ -422,7 +488,6 @@ function generateNextRound(req, res, winners, edition, number, double) {
         }
     });
 
-
     req.models.Round.find({
             edition: edition,
             number: parseInt(number)
@@ -430,19 +495,14 @@ function generateNextRound(req, res, winners, edition, number, double) {
         function(err, roundDb) {
             if (roundDb.length > 0) {
                 var gamesDb = roundDb[0].games;
-                for (var i = 0; i < gamesDb.length; i = i + 2) {
-                    gamesDb[i].home = winners[i];
-                    gamesDb[i].away = winners[i + 1];
+                for (var i = 0; i < gamesDb.length; i++) {
+                    gamesDb[i].home = winners[i * 2];
+                    gamesDb[i].away = winners[i * 2 + 1];
                 }
-
                 for (var key in gamesDb) {
                     var gameDb = gamesDb[key];
-
-                    gameDb.save(function(err) {
-
-                    })
+                    gameDb.save(function(err) {})
                 }
-
                 if (double) {
                     number = number + 1;
                     req.models.Round.find({
@@ -458,9 +518,7 @@ function generateNextRound(req, res, winners, edition, number, double) {
                                 }
                                 for (var key in gamesDb) {
                                     var gameDb = gamesDb[key];
-                                    gameDb.save(function(err) {
-
-                                    })
+                                    gameDb.save(function(err) {})
                                 }
                             }
                             res.status(200).send();
@@ -472,4 +530,8 @@ function generateNextRound(req, res, winners, edition, number, double) {
                 res.status(200).send();
             }
         });
+}
+
+exports.finalize = function(req, res, next) {
+    next(new Error("EMPTY"));
 }

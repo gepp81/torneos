@@ -3,7 +3,6 @@
         <div class="panel-heading">
             <h4>{{item.name}} (id: {{item.id}}) >> Agregar Edición</h4>
         </div>
-
         <div class="dependencyForm">
             <form ng-submit="" method="post" name="addEdition" novalidate>
                 <div class="width50 marginAuto">
@@ -31,7 +30,6 @@
                         <span class="input-group-addon width30" id="basic-addon1">
                             Ida y Vuelta
                         </span>
-
                         <span class="form-control">
                             <div class="checkbox checkbox-primary">
                                 <input id="checkDouble" type="checkbox" class="styled" ng-model="double"/>
@@ -72,6 +70,16 @@
                                typeahead="team.name for team in teams | filter:$viewValue | limitTo:8" 
                                class="form-control" typeahead-on-select="addToList(teamSelected)">
                     </div>
+                    <div class="input-group width100" ng-show="!repeat">
+                        <span class="input-group-addon width30" id="basic-addon1">
+                            Agregar Campeones
+                        </span>
+                        <input type="text" ng-model="tournamentSelected" 
+                               typeahead="tournament.name for tournament in tournaments | filter:$viewValue | limitTo:8" 
+                               class="form-control" typeahead-on-select="selectTournament(tournamentSelected)">
+                        <input type="number" ng-model="tournamentTeamsTotal" class="form-control" 
+                               placeholder="Por defecto el valor es 1">
+                    </div>                    
                     <h4>Equipos Agregados</h4>
                     <table>
                         <tr ng-repeat="item in selectedItems">

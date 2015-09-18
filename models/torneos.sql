@@ -1,18 +1,3 @@
-
 INSERT INTO `application` VALUES (1,1);
 
-INSERT INTO `edition` VALUES (1,2,'4 copa doble','[\"Quilmes\",\"Berazategui\",\"Banfield\",\"Lanus\"]',4,1,'CUP',1,3),(2,1,'4 copa simple','[\"Rio de la Plata\",\"San Pablo\",\"Boca\",\"San Lorenzo\"]',2,1,'CUP',0,2),(3,3,'4 liga doble','[\"Kimberley\",\"Aldosivi\",\"Alvarado\",\"Union\"]',6,1,'LEAGUE',1,1),(4,4,'4 liga simple','[\"Central\",\"Racing\",\"Newells\",\"Independiente\"]',3,1,'LEAGUE',0,1);
-
-INSERT INTO `game` VALUES (1,NULL,NULL,NULL,NULL),(2,'Banfield','Lanus',NULL,NULL),(3,NULL,NULL,NULL,NULL),(4,'Lanus','Banfield',NULL,NULL),(5,'Berazategui','Quilmes',NULL,NULL),(6,'Quilmes','Berazategui',NULL,NULL),(7,'Boca','San Lorenzo',NULL,NULL),(8,NULL,NULL,NULL,NULL),(9,'Rio de la Plata','San Pablo',NULL,NULL),(10,'Union','Alvarado',NULL,NULL),(11,'Aldosivi','Alvarado',NULL,NULL),(12,'Alvarado','Union',NULL,NULL),(13,'Alvarado','Kimberley',NULL,NULL),(14,'Union','Aldosivi',NULL,NULL),(15,'Kimberley','Union',NULL,NULL),(16,'Aldosivi','Union',NULL,NULL),(17,'Aldosivi','Kimberley',NULL,NULL),(18,'Union','Kimberley',NULL,NULL),(19,'Kimberley','Aldosivi',NULL,NULL),(20,'Kimberley','Alvarado',NULL,NULL),(21,'Alvarado','Aldosivi',NULL,NULL),(22,'Racing','Newells',NULL,NULL),(23,'Independiente','Racing',NULL,NULL),(24,'Newells','Independiente',NULL,NULL),(25,'Independiente','Central',NULL,NULL),(26,'Central','Racing',NULL,NULL),(27,'Central','Newells',NULL,NULL);
-
-INSERT INTO `position` VALUES (1,'Lanus',0,0,0,0,0,0,4,1),(1,'Banfield',0,0,0,0,0,0,4,2),(1,'Berazategui',0,0,0,0,0,0,4,3),(1,'Quilmes',0,0,0,0,0,0,4,4),(2,'San Lorenzo',0,0,0,0,0,0,4,5),(2,'Boca',0,0,0,0,0,0,4,6),(2,'San Pablo',0,0,0,0,0,0,4,7),(2,'Rio de la Plata',0,0,0,0,0,0,4,8),(3,'Union',0,0,0,0,0,0,NULL,9),(3,'Alvarado',0,0,0,0,0,0,NULL,10),(3,'Aldosivi',0,0,0,0,0,0,NULL,11),(3,'Kimberley',0,0,0,0,0,0,NULL,12),(4,'Independiente',0,0,0,0,0,0,NULL,13),(4,'Newells',0,0,0,0,0,0,NULL,14),(4,'Racing',0,0,0,0,0,0,NULL,15),(4,'Central',0,0,0,0,0,0,NULL,16);
-
-INSERT INTO `round` VALUES (1,1,1,0),(2,1,2,1),(3,1,3,0),(4,1,4,1),(5,2,1,1),(6,2,2,1),(7,3,4,0),(8,3,1,0),(9,3,2,0),(10,3,3,0),(11,3,5,0),(12,3,6,0),(13,4,1,0),(14,4,2,0),(15,4,3,0);
-
-INSERT INTO `round_games` VALUES (3,1),(1,2),(4,3),(2,4),(2,5),(1,6),(5,7),(6,8),(5,9),(7,10),(9,14),(10,11),(8,12),(11,13),(12,15),(11,16),(8,19),(9,20),(7,17),(10,18),(12,21),(15,22),(13,24),(14,23),(15,25),(13,26),(14,27);
-
-
 INSERT INTO `team` VALUES (1,'Independiente','8,8,7,7,6,5,6,7,6,5'),(2,'Rio de la Plata','8,8,7,7,6,5,6,7,6,6'),(3,'Aldosivi','4,4,4,4,6,6,5,4,5,4'),(4,'Alvarado','3,3,4,3,4,3,5,4,5,5'),(5,'Kimberley','8,8,7,7,6,5,6,7,6,5'),(6,'Union','8,8,7,7,6,5,6,7,6,6'),(7,'San Martin','4,4,4,4,6,6,5,4,5,4'),(8,'Belgrano','3,3,4,3,4,3,5,4,5,5'),(9,'San Lorenzo','8,8,7,7,6,5,6,7,6,5'),(10,'Lanus','8,8,7,7,6,5,6,7,6,6'),(11,'Quilmes','4,4,4,4,6,6,5,4,5,4'),(12,'Central','4,4,4,4,6,6,5,4,5,4'),(13,'Racing','8,8,7,7,6,5,6,7,6,5'),(14,'Huracan','8,8,7,7,6,5,6,7,6,6'),(15,'Estudiantes','8,8,7,7,6,5,6,7,6,5'),(16,'Colon','8,8,7,7,6,5,6,7,6,6'),(17,'San Pablo','4,4,4,4,6,6,5,4,5,4'),(18,'Instituto','3,3,4,3,4,3,5,4,5,5'),(19,'Berazategui','8,8,7,7,6,5,6,7,6,5'),(20,'Banfield','8,8,7,7,6,5,6,7,6,6'),(21,'Arsenal','4,4,4,4,6,6,5,4,5,4'),(22,'Newells','4,4,4,4,6,6,5,4,5,4'),(23,'Talleres','4,4,4,4,6,6,5,4,5,4'),(24,'Boca','3,3,4,3,4,3,5,4,5,5');
-
-
-INSERT INTO `tournament` VALUES (1,'4 copa simple','1','2'),(2,'4 copa doble','1','1'),(3,'4 liga doble','1','3'),(4,'4 liga simple','1','4');

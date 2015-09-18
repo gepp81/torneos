@@ -82,7 +82,7 @@ function SeasonNewController($scope, $modal, $state, $stateParams, SeasonTournam
 
 }
 
-function SeasonPlayController($scope, $modal, $state, $localStorage, Season, Application, Round, Game, Position) {
+function SeasonPlayController($scope, $modal, $state, $localStorage, $timeout, Season, Application, Round, Game, Position) {
 
     var hasTies = function(positions) {
         for (var i = 0; i < positions.length; i++) {
@@ -127,12 +127,14 @@ function SeasonPlayController($scope, $modal, $state, $localStorage, Season, App
     }
 
     $scope.weekChanged = function() {
-        if ($localStorage.week) {
-            $scope.weekPagination = $localStorage.week;
-            delete $localStorage.week;
-        }
-        if ($scope.weekPagination != $scope.size)
+        $localStorage.week = $scope.weekPagination;
+        if ($scope.weekPagination != $scope.size) {
             getRound($scope.editions, $scope.weekPagination);
+        } else {
+            Position.define({
+                edition: round[eKey].rounds.edition
+            }, function(data) {}, function(err) {});
+        }
         getPositions($scope.editions);
     }
 
@@ -146,7 +148,11 @@ function SeasonPlayController($scope, $modal, $state, $localStorage, Season, App
                     function(data) {
                         $scope.editions = data.editions;
                         $scope.size = data.size + 1;
-                        $scope.weekPagination = data.week;
+                        if ($localStorage.week) {
+                            $scope.weekPagination = $localStorage.week;
+                        } else {
+                            $scope.weekPagination = data.week;
+                        }
                         $scope.playedWeek = data.week;
                         $scope.weekChanged();
                     },
@@ -176,6 +182,10 @@ function SeasonPlayController($scope, $modal, $state, $localStorage, Season, App
                     number: round[eKey].rounds.number,
                 }, function(data) {
                     getRound($scope.editions, $scope.weekPagination);
+                    $timeout(Position.define({
+                        edition: round[eKey].rounds.edition
+                    }, function(data) {}, function(err) {}), 10000);
+
                 }, function(err) {});
             }
         });
@@ -191,9 +201,7 @@ function SeasonPlayController($scope, $modal, $state, $localStorage, Season, App
             });
             $scope.positions[edition].positions = data;
             $scope.ties[edition] = false;
-        }, function(err) {
-
-        });
+        }, function(err) {});
     }
 
     $scope.getPoints = function(position) {
@@ -251,5 +259,9 @@ function SeasonPlayController($scope, $modal, $state, $localStorage, Season, App
     $scope.$on("$destroy", function() {
         $localStorage.week = $scope.weekPagination;
     });
+
+    $scope.finalizeSeason = function(editions) {
+        console.log(editions);
+    }
 
 }

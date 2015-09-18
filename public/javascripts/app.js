@@ -45,6 +45,17 @@ var app = angular.module('Torneos', ['ngResource', 'ui.router', 'ui.bootstrap', 
                 },
                 templateUrl: "views/edition/form.html"
             })
+            .state("championByTour", {
+                url: "/championByTour",
+                params: {
+                    item: null
+                },
+                templateUrl: "views/tournament/champion.html"
+            })
+            .state("awards", {
+                url: "/awards",
+                templateUrl: "views/team/champion.html"
+            })          
             .state("getFixture", {
                 url: "/getFixture",
                 params: {
@@ -71,6 +82,7 @@ app
     .factory("Round", RoundResource)
     .factory("Game", GameResource)
     .factory("Position", PositionResource)
+    .factory("ChampionTour", ChampionTourResource)
     .factory("TournamentSave", TournamentSaveResource);
 
 app
@@ -82,4 +94,6 @@ app
     .controller("SeasonController", SeasonController)
     .controller("SeasonNewController", SeasonNewController)
     .controller("SeasonPlayController", SeasonPlayController)
+    .controller("ChampionTourController", ChampionTourController)
+    .controller("ChampionTeamController", ChampionTeamController)
     .controller("TeamSaveController", TeamSaveController);

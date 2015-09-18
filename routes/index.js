@@ -17,26 +17,14 @@ router.post('/application', function(req, res, next) {
         seasonDb.status = "Jugando";
         seasonDb.save(seasonDb, function(err) {
             req.models.Application.get(1, function(err, appDb) {
-                if (err) {
-                    var app = {};
-                    app.season = req.body.season.id;
-                    req.models.Application.create(app, function(err, appDb) {
-                        if (err) {
-                            res.status(500).send(err);
-                        } else {
-                            res.status(200).send();
-                        }
-                    });
-                } else {
-                    appDb.season = req.body.season.id;
-                    appDb.save(function(err) {
-                        if (err) {
-                            res.status(500).send(err);
-                        } else {
-                            res.status(200).send();
-                        }
-                    })
-                }
+                appDb.season = req.body.season.id;
+                appDb.save(function(err) {
+                    if (err) {
+                        res.status(500).send(err);
+                    } else {
+                        res.status(200).send();
+                    }
+                })
             });
         });
     });
@@ -73,11 +61,16 @@ router.get('/fixture/:edition', routesTournament.getFixture);
 router.get('/seasons/:page', routesSeason.getSeason);
 router.get('/season/:id', routesSeason.get);
 router.put('/season', routesSeason.saveWeek);
+router.post('/seasonFinalize', routesSeason.finalize);
 router.post('/season', routesSeason.createSeason);
 router.post('/round', routesSeason.getRound);
-router.post('/position', routesSeason.getPosition);
+router.get('/position/:number/:tournament', routesSeason.getPositionByTournament);
+router.post('/position', routesSeason.getPositions);
 router.put('/position', routesSeason.definePosition);
 router.post('/game', routesSeason.playGame);
 router.put('/game', routesSeason.playGames);
+
+router.get('/champions/:tournament/:lastEdition', routesTournament.championByTour);
+router.post('/champions', routesTournament.champions);
 
 module.exports = router;

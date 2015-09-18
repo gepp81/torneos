@@ -1,5 +1,5 @@
 function TeamController($scope, $modal, Teams) {
-    
+
     var sizeByPage = 10;
 
     var getTeams = function(page) {
@@ -24,10 +24,10 @@ function TeamController($scope, $modal, Teams) {
         $scope.currentPage = 1;
         getTeams($scope.currentPage);
     }
-    
+
     getTeams(1);
-    
- /** New and Edit **/
+
+    /** New and Edit **/
 
     $scope.open = function(size, item) {
         var modalInstance = $modal.open({
@@ -49,7 +49,7 @@ function TeamController($scope, $modal, Teams) {
         }, function() {
 
         });
-    };    
+    };
 
 };
 
@@ -62,20 +62,35 @@ function TeamSaveController($scope, $modalInstance, TeamSave, team) {
                 team: $scope.team
             }, function(data) {
                 $modalInstance.close();
-            }, function(error) {
-            });
+            }, function(error) {});
         } else {
             TeamSave.save({
                 team: $scope.team
             }, function(data) {
                 $modalInstance.close();
-            }, function(error) {
-            });
+            }, function(error) {});
         }
     };
 
     $scope.cancel = function() {
         $modalInstance.dismiss();
     };
+
+}
+
+function ChampionTeamController($scope, ChampionTour, Application) {
+
+    Application.get({},
+        function(data) {
+            ChampionTour.getAllChampions({
+                    lastEdition: data.season
+                },
+                function(data) {
+                    $scope.champions = data;
+                },
+                function(err) {});
+        },
+        function(err) {});
+
 
 }

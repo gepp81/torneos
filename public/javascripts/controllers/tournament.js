@@ -32,6 +32,12 @@ function TournamentController($scope, $state, $modal, Tournament, Tournaments) {
         });
     }
 
+    $scope.getChampions = function(item) {
+        $state.go('championByTour', {
+            item: item
+        });
+    }
+
     $scope.open = function(size, item) {
         var modalInstance = $modal.open({
             animation: $scope.animationsEnabled,
@@ -81,10 +87,10 @@ function TournamentSaveController($scope, $modalInstance, TournamentSave, tourna
 
 };
 
-function TournamentEditionController($scope, $state, $stateParams, Team, Edition) {
+function TournamentEditionController($scope, $state, $stateParams, Tournaments, Team, Edition, Position) {
     $scope.item = $stateParams.item;
     $scope.selectedItems = new Array();
-    
+
     $scope.startWeek = 1;
 
     $scope.addToList = function(item) {
@@ -93,6 +99,22 @@ function TournamentEditionController($scope, $state, $stateParams, Team, Edition
             $scope.selectedItems.push(item);
             $scope.teamSelected = '';
         }
+    }
+
+    $scope.selectTournament = function(tournament) {
+        if (!$scope.tournamentTeamsTotal)
+            $scope.tournamentTeamsTotal = 1;
+        Position.getByTournament({
+            tournament: tournament,
+            number: $scope.tournamentTeamsTotal
+        }, function(data) {
+            for (var i in data) {
+                $scope.addToList(data[i]);
+            }
+            $scope.tournamentSelected = '';
+        }, function(err) {
+
+        })
     }
 
     $scope.options = [{
@@ -122,6 +144,14 @@ function TournamentEditionController($scope, $state, $stateParams, Team, Edition
         console.error("No recupero datos");
     });
 
+    Tournaments.get({},
+        function(data) {
+            if (data.length > 0)
+                $scope.tournaments = data;
+        },
+        function(err) {}
+    );
+
     $scope.ok = function() {
         Edition.save({
                 tournament: $scope.item,
@@ -146,7 +176,7 @@ function TournamentEditionController($scope, $state, $stateParams, Team, Edition
             tournament: $scope.item.id,
             lastEdition: $scope.item.editionPlayed
         }, function(data) {
-            if (data.size == (data.teams - 1) * 2) 
+            if (data.size == (data.teams - 1) * 2)
                 $scope.double = true;
             $scope.selectedItems = data.teams;
         }, function(err) {
@@ -173,12 +203,12 @@ function EditionController($scope, $state, $stateParams, Edition) {
             season: $scope.item
         });
     }
-    
+
     $scope.cancel = function(item) {
         $state.go('tournament', {
             item: item
         });
-    }    
+    }
 
     var getEditions = function() {
         Edition.getAll({
@@ -210,13 +240,32 @@ function FixtureController($scope, $state, $stateParams, Fixture) {
             console.error("No recupero datos");
         });
     }
-    
+
     $scope.cancel = function(item) {
         $state.go('edition', {
-           item: $scope.season 
+            item: $scope.season
         });
     }
 
     getFixture();
 
 };
+
+function ChampionTourController($scope, $stateParams, ChampionTour) {
+
+    $scope.tournament = $stateParams.item;
+
+    var query = ChampionTour.getChampions({
+        tournament: $scope.tournament.id,
+        lastEdition: $scope.tournament.editionPlayed
+    });
+
+    query.$promise.then(function(data) {
+        $scope.champions = [];
+        for (var i = 0; i < data.length; i++) {
+            var item = data[i];
+            $scope.champions.push(item);
+        }
+    });
+
+}

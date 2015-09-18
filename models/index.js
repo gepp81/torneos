@@ -26,6 +26,8 @@ module.exports = function(db, models) {
     });
 
     models.Position = db.define("position", {
+        id: 'serial',
+        league: 'integer',
         edition: 'integer',
         team: String,
         games: 'integer',
@@ -94,6 +96,8 @@ module.exports = function(db, models) {
     models.Application = db.define("application", {
         season: 'integer'
     });
+    
+    models.db = db;
 
     // Sincronize db ONLY FOR FIRST
     /*db.drop(function() {

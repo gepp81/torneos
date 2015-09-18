@@ -9,11 +9,18 @@
             <div style="text-align: center">
                 <pagination class="pagination" total-items="size" items-per-page="1" ng-model="weekPagination" ng-change="weekChanged()" previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último">
                 </pagination>
-
-                <h4 ng-if="weekPagination != size">Fecha {{weekPagination}} 
-                    <button ng-click="playWeek(rounds)" class="btn btn-sm btn-info">Jugar</button>
-                </h4>
-                <h4 ng-if="weekPagination == size">Posiciones Finales</h4>
+                <span ng-if="weekPagination != size">
+                    <h4>
+                        Fecha {{weekPagination}}
+                        <button ng-click="playWeek(rounds)" class="btn btn-sm btn-info">Jugar</button>
+                    </h4>
+                </span>
+                <span ng-if="weekPagination == size">
+                    <h4>
+                        Posiciones Finales
+                        <button ng-click="finalizeSeason(editions)" class="btn btn-sm btn-info">Finalizar</button>
+                    </h4>
+                </span>
             </div>
 
             <accordion close-others="false">
@@ -88,12 +95,13 @@
                                     </table>
                                 </div>
                                 <div class="col-md-6" ng-if="weekPagination == size">
-                                     <button ng-click="defineLeague(positions[value.id].positions, value.id)" class="btn btn-sm btn-info"  
-                                             ng-show="ties[value.id]">Definir</button>
+                                     <button ng-click="defineLeague(positions[value.id].positions, value.id)" 
+                                             class="btn btn-sm btn-info"  ng-show="ties[value.id]">
+                                         Definir
+                                    </button>
                                 </div>
                             </div>
                         </div>
-
                 </accordion-group>
             </accordion>
             </div>

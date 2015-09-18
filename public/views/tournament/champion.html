@@ -1,0 +1,21 @@
+<section class="central" ng-controller="ChampionTourController">
+    <h3>
+        Campeones de {{tournament.name}}
+    </h3>
+    <div class="panel panel-default">
+        <div>
+            <table class="table alignCenter">
+                <thead>
+                    <th class="alignCenter">Equipo</th>
+                    <th class="alignCenter">Cantidad</th>
+                </thead>
+                <tbody class="alignCenter">
+                    <tr ng-repeat="item in champions">
+                        <td class="paddingLeftOnePercent">{{item.team}}</td>
+                        <td class="paddingLeftOnePercent">{{item.count}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>

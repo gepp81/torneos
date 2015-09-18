@@ -29,7 +29,7 @@ app.use(bodyParser.urlencoded({
 // Load Models DB
 app.use(orm.express(settings.database, {
     define: function(db, models, next) {
-        db.settings.set('instance.cache', false);        
+        db.settings.set('instance.cache', false);
         var listModels = require('./models/');
         listModels(db, models);
         next();
@@ -55,21 +55,14 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
-
-        return res.status(500).send({
-            error: "Cant Connect"
-        });
-
+        return res.status(500).send(err);
     });
 }
 
 // production error handler
 // no stacktraces leaked to user
 app.use(function(err, req, res, next) {
-    console.error(err);
-    return res.status(500).send({
-        error: "Cant Connect"
-    });
+    return res.status(500).send(err);
 
 });
 

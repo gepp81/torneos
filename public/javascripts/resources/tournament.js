@@ -98,7 +98,7 @@ function RoundResource($resource) {
 };
 
 function PositionResource($resource) {
-    return $resource("/position/:editions", {}, {
+    return $resource("/position/:editions/:number/:tournament", {}, {
         getPosition: {
             method: 'POST',
             data: {
@@ -109,6 +109,19 @@ function PositionResource($resource) {
                     return response.data;
                 }
             }
+        },
+        getByTournament: {
+            method: 'GET',
+            params: {
+                tournament: "@tournament",
+                number: "@number"
+            },
+            isArray: 'true',
+            interceptor: {
+                response: function(response) {
+                    return response.data;
+                }
+            }            
         },
         define: {
             method: 'PUT',

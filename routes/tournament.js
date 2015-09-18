@@ -4,6 +4,7 @@ var ORDER_NUMBER_ASC = 'number';
 var ORDER_ID_DESC = '-id';
 var RoundFactory = require("./factory/round.js");
 var async = require('async');
+var orm = require('orm');
 
 var EDITION_LEAGUE = "LEAGUE";
 var EDITION_CUP = "CUP";
@@ -43,7 +44,7 @@ exports.get = function(req, res, next) {
 };
 
 /**
- * Recupera todos los torenos sin paginar. PAra Autocomplete
+ * Recupera todos los torneos sin paginar. PAra Autocomplete
  */
 exports.getAll = function(req, res, next) {
     req.models.Tournament.find().order(ORDER_NAME_ASC).run(function(err, tournaments) {
@@ -174,6 +175,7 @@ function createNewPosition(req, editionDb) {
     for (var i = length - 1; i >= 0; i--) {
         var position = {
             edition: editionDb.id,
+            league: editionDb.league,
             team: editionDb.teams[i],
             games: 0,
             win: 0,
@@ -192,7 +194,7 @@ function createNewPosition(req, editionDb) {
 /**
  * Crea una edicion para un torneo dado
  */
-function createLeagueEdition(edition, req, res, tournamentDb) {
+function createLeagueEdition(edition, req, res, next, tournamentDb) {
     if (edition.type === EDITION_LEAGUE) {
         edition.size = req.body.double ? (edition.teams.length - 1) * 2 : (edition.teams.length - 1);
     }
@@ -203,16 +205,20 @@ function createLeagueEdition(edition, req, res, tournamentDb) {
         }
         edition.size = req.body.double ? count * 2 : count;
     }
-    req.models.Edition.create(edition, function(err, editionDb) {
-        if (err) {
-            res.status(500).send({
-                error: 'Error to update the value.'
-            });
-        } else {
-            createNewPosition(req, editionDb);
-            setupEdition(req, res, tournamentDb, editionDb);
-        }
-    });
+    if (edition.teams.length >= 2) {
+        req.models.Edition.create(edition, function(err, editionDb) {
+            if (err) {
+                res.status(500).send({
+                    error: 'Error to update the value.'
+                });
+            } else {
+                createNewPosition(req, editionDb);
+                setupEdition(req, res, tournamentDb, editionDb);
+            }
+        });
+    } else {
+        next(new Error("Cantidad de equipos erronea"));
+    }
 }
 
 /**
@@ -230,7 +236,7 @@ exports.addEdition = function(req, res, next) {
             edition.leagueName = tournamentDb.name;
             edition.playing = 1;
             edition.double = req.body.double;
-            createLeagueEdition(edition, req, res, tournamentDb);
+            createLeagueEdition(edition, req, res, next, tournamentDb);
         }
     });
 }
@@ -279,4 +285,63 @@ exports.getFixture = function(req, res, next) {
             res.status(200).send(rounds);
         }
     })
+}
+
+/**
+ * Devuelve los campeones de un torneo
+ */
+exports.championByTour = function(req, res, next) {
+    req.models.Position.aggregate(["team"], {
+        league: req.params.tournament,
+        final: 1,
+        edition: orm.ne(req.params.lastEdition)
+    }).groupBy("team").count().order('-count').get(function(err, positionsDb) {
+        if (err) {
+            next(err);
+            return;
+        } else {
+            res.status(200).send(positionsDb);
+        }
+    });
+}
+
+exports.champions = function(req, res, next) {
+    /*  req.models.Season.get(req.body.lastEdition, function(err, seasonDb) {
+          if (err) {
+              next(err);
+          } else {
+              var editions = new Array();            
+              for (var i in seasonDb.editions) {
+                  editions.push(seasonDb.editions[i].id);
+              }
+              req.models.Position.find({
+                  edition: orm.not_in(editions),
+                  final: 1
+              }).order("team").order("league").run(function(err, positions) {
+                  if (err) {
+                      next(err);
+                  } else {
+                      res.status(200).send(positions);
+                  }
+              });
+          }
+      });*/
+    req.models.Season.get(req.body.lastEdition, function(err, seasonDb) {
+        if (err) {
+            next(err);
+        } else {
+            var editions = new Array();
+            for (var i in seasonDb.editions) {
+                editions.push(seasonDb.editions[i].id);
+            }
+            console.log(editions);
+            req.models.db.driver.execQuery("SELECT position.team, GROUP_CONCAT(league.name) tournaments FROM position " +
+                "INNER JOIN tournament league ON position.league = league.id WHERE final = 1 AND " +
+                "edition NOT IN (?) GROUP BY position.team", editions, function(err, positions){
+                res.status(200).send(positions);
+            });
+
+        }
+    });
+
 }
