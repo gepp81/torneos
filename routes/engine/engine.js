@@ -68,7 +68,7 @@ module.exports = function Engine(game, teams) {
 
     this.playSimpleGame = function() {
         var result = {};
-        if (this.game.home === this.teams[0].name) {
+        if (this.game.home.name === this.teams[0].name) {
             result.homeGoals = this.getGoal(this.teams[0].skill);
             result.awayGoals = this.getGoal(this.teams[1].skill);
         } else {

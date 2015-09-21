@@ -6,6 +6,12 @@ function ApplicationResource($resource) {
                 season: "@season"
             }
         },
+        finalize: {
+            method: 'PUT',
+            data: {
+                season: "@season"
+            }
+        },
         get: {
             method: 'GET'
         }

@@ -1,12 +1,17 @@
 var LIMIT = 20;
-var ORDER = 'name';
+var ORDER_NAME_ASC = 'name';
+var SKILL_SEPARATOR = ",";
+var SKILL_LENGTH = 10;
 var async = require("async");
 
+/**
+ * Crea un nuevo equipo
+ */
 exports.create = function(req, res, next) {
     var team = req.body.team;
     if (team && team.name) {
-        var skill = team.skill.split(",");
-        if (skill.length == 10) {
+        var skill = team.skill.split(SKILL_SEPARATOR);
+        if (skill.length == SKILL_LENGTH) {
             req.models.Team.create(team, function(err, teamDb) {
                 if (err) {
                     next(err);
@@ -21,6 +26,9 @@ exports.create = function(req, res, next) {
     }
 };
 
+/**
+ * Recupera un equipo por id o name
+ */
 exports.get = function(req, res, next) {
     if (req.params.id) {
         req.models.Team.get(req.params.id, function(err, teamDb) {
@@ -44,6 +52,9 @@ exports.get = function(req, res, next) {
     }
 };
 
+/**
+ * Recupera todos los equipos para el autocomplete
+ */
 exports.getAllTeams = function(req, res, next) {
     req.models.Team.find({}, function(err, teams) {
         if (err) {
@@ -54,6 +65,9 @@ exports.getAllTeams = function(req, res, next) {
     });
 };
 
+/**
+ * Recupera los equipos paginados
+ */
 exports.getAll = function(req, res, next) {
     async.parallel({
             teams: function(callback) {
@@ -64,7 +78,7 @@ exports.getAll = function(req, res, next) {
                 }
                 page = (page - 1) * limit;
                 console.log(req.params.size);
-                req.models.Team.find().order(ORDER).limit(limit).offset(page).run(function(err, teams) {
+                req.models.Team.find().order(ORDER_NAME_ASC).limit(limit).offset(page).run(function(err, teams) {
                     if (err) {
                         callback(err);
                         return;
@@ -90,14 +104,17 @@ exports.getAll = function(req, res, next) {
         })
 };
 
+/**
+ * Actuakliza un equipo
+ */
 exports.update = function(req, res, next) {
     var team = req.body.team;
     if (team && team.name && team.id) {
-        var skill = team.skill.split(",");
-        if (skill.length == 10) {
+        var skill = team.skill.split(SKILL_SEPARATOR);
+        if (skill.length == SKILL_LENGTH) {
             req.models.Team.get(team.id, function(err, teamDb) {
                 if (err) {
-                    res.status(500).send("errorrrr pq no definio un team");
+                    next(new Error("errorrrr pq no definio un team"));
                 } else {
                     teamDb.save(team, function(err) {
                         if (err) {
@@ -109,7 +126,7 @@ exports.update = function(req, res, next) {
                 }
             });
         } else {
-            throw new Error("No definio un equipo.");
+            next(new Error("No definio un equipo."));
         }
     }
 }

@@ -1,5 +1,8 @@
 var LIMIT = 20;
-var ORDER = '-id';
+var ORDER_ID_ASC = 'id';
+var ORDER_ID_DESC = '-id';
+var ORDER_FINAL_ASC = 'final';
+var ORDER_NUMBER_ASC = 'number';
 var EDITION_LEAGUE = "LEAGUE";
 var EDITION_CUP = "CUP";
 var async = require('async');
@@ -14,7 +17,7 @@ exports.getSeason = function(req, res, next) {
             seasons: function(callback) {
                 var page = req.params.page ? req.params.page : 1;
                 page = (page - 1) * LIMIT;
-                req.models.Season.find().order(ORDER).limit(LIMIT).offset(page).run(function(err, seasons) {
+                req.models.Season.find().order(ORDER_ID_DESC).limit(LIMIT).offset(page).run(function(err, seasons) {
                     if (err) {
                         callback(err);
                         return;
@@ -34,9 +37,7 @@ exports.getSeason = function(req, res, next) {
         },
         function(err, results) {
             if (err) {
-                res.status(500).send({
-                    error: 'Cant get items.'
-                });
+                next(err);
             } else {
                 res.status(200).send(results);
             }
@@ -49,7 +50,7 @@ exports.getSeason = function(req, res, next) {
 exports.get = function(req, res, next) {
     req.models.Season.get(req.params.id, function(err, season) {
         if (err) {
-            res.status(500).send(err);
+            next(err);
         } else {
             res.status(200).send(season);
         }
@@ -66,7 +67,7 @@ exports.createSeason = function(req, res, next) {
         async.forEachOf(tournaments, function(value, key, callback) {
                 req.models.Edition.find({
                     leagueName: value
-                }).order(ORDER).limit(1).run(function(err, editionDb) {
+                }).order(ORDER_ID_DESC).limit(1).run(function(err, editionDb) {
                     if (err) return callback(err);
                     configs[value] = {
                         id: editionDb[0].id,
@@ -80,7 +81,7 @@ exports.createSeason = function(req, res, next) {
             },
             function(err) {
                 if (err) {
-                    req.status(500).send(err);
+                    next(err);
                 } else {
                     var season = {
                         editions: configs,
@@ -94,7 +95,7 @@ exports.createSeason = function(req, res, next) {
                     season.size = max;
                     req.models.Season.create(season, function(err, seasonDb) {
                         if (err) {
-                            res.status(500).send(err);
+                            next(err);
                         } else {
                             res.status(200).send(err);
                         }
@@ -115,7 +116,7 @@ exports.getRound = function(req, res, next) {
                 req.models.Round.find({
                     edition: value.id,
                     number: req.body.week - value.startWeek + 1
-                }).order('number').run(function(err, rounds) {
+                }).order(ORDER_NUMBER_ASC).run(function(err, rounds) {
                     if (err) return callback(err);
                     configs[value.id] = {
                         rounds: rounds[0],
@@ -126,7 +127,7 @@ exports.getRound = function(req, res, next) {
             },
             function(err) {
                 if (err) {
-                    res.status(500).send(err);
+                    next(err);
                 } else {
                     res.status(200).send(configs);
                 }
@@ -144,7 +145,7 @@ exports.getPositions = function(req, res, next) {
         async.forEachOf(editions, function(value, key, callback) {
                 req.models.Position.find({
                     edition: value.id
-                }).order('id').run(function(err, positions) {
+                }).order(ORDER_ID_ASC).run(function(err, positions) {
                     if (err) return callback(err);
                     configs[value.id] = {
                         positions: positions
@@ -176,7 +177,7 @@ exports.getPositionByTournament = function(req, res, next) {
         } else {
             req.models.Position.find({
                 edition: tourDb[0].editionPlayed
-            }).order('final').limit(parseInt(req.params.number)).run(function(err, posDb) {
+            }).order(ORDER_FINAL_ASC).limit(parseInt(req.params.number)).run(function(err, posDb) {
                 if (err) {
                     next(err);
                     return;
@@ -359,7 +360,7 @@ function finalizeSeries(positionsDb, req, res, next) {
         },
         function(err) {
             if (err) {
-                res.status(500).send(err);
+                next(err);
             } else {
                 definePositions(req, res, positionsDb);
             }
@@ -456,7 +457,7 @@ exports.playGames = function(req, res, next) {
                         }
                     );
                 } else {
-                    res.status(500).send({});
+                    next(new Error("Ya se jugo el partido"));
                 }
             },
             function(err) {
@@ -530,8 +531,4 @@ function generateNextRound(req, res, winners, edition, number, double) {
                 res.status(200).send();
             }
         });
-}
-
-exports.finalize = function(req, res, next) {
-    next(new Error("EMPTY"));
 }

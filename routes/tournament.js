@@ -1,7 +1,9 @@
 var LIMIT = 20;
+var TEAM = "team";
 var ORDER_NAME_ASC = 'name';
 var ORDER_NUMBER_ASC = 'number';
 var ORDER_ID_DESC = '-id';
+var ORDER_COUNT_DESC = '-count';
 var RoundFactory = require("./factory/round.js");
 var async = require('async');
 var orm = require('orm');
@@ -20,13 +22,13 @@ exports.create = function(req, res, next) {
         tournament.editionNumber = 0;
         req.models.Tournament.create(tournament, function(err, tournamentDb) {
             if (err) {
-                res.status(500).send(err);
+                next(err);
             } else {
                 res.status(200).send(tournamentDb);
             }
         });
     } else {
-        res.status(500).send("No se definio un torneo.");
+        next(new Error("No se definio un torneo."));
     }
 };
 
@@ -36,7 +38,7 @@ exports.create = function(req, res, next) {
 exports.get = function(req, res, next) {
     req.models.Tournament.get(req.params.id, function(err, tournamentDb) {
         if (err) {
-            res.status(500).send("error pq no definio un tournament");
+            next(new Error("error pq no definio un tournament"));
         } else {
             res.status(200).send(tournamentDb);
         }
@@ -49,7 +51,7 @@ exports.get = function(req, res, next) {
 exports.getAll = function(req, res, next) {
     req.models.Tournament.find().order(ORDER_NAME_ASC).run(function(err, tournaments) {
         if (err) {
-            res.status(500).send(err);
+            next(err);
         } else {
             res.status(200).send(tournaments);
         }
@@ -86,7 +88,7 @@ exports.getAllPage = function(req, res, next) {
         }
     }, function(err, results) {
         if (err) {
-            res.status(500).send("error pq no definio un tournament");
+            next(new Error("error pq no definio un tournament"));
         } else {
             res.status(200).send(results);
         }
@@ -102,13 +104,11 @@ exports.update = function(req, res, next) {
     if (tournament && tournament.name && tournament.id) {
         req.models.Tournament.get(tournament.id, function(err, tournamentDb) {
             if (err) {
-                res.status(500).send("errorrrr pq no definio un tournament");
+                next(new Error("errorrrr pq no definio un tournament"));
             } else {
                 tournamentDb.save(tournament, function(err) {
                     if (err) {
-                        res.status(500).send({
-                            error: 'Error to update the value.'
-                        });
+                        next(err);
                     } else {
                         res.status(200).send(tournamentDb);
                     }
@@ -116,7 +116,7 @@ exports.update = function(req, res, next) {
             }
         });
     } else {
-        res.status(500).send("errorrrr pq no definio un tournament");
+        next(new Error("errorrrr pq no definio un tournament"));
     }
 }
 
@@ -208,9 +208,7 @@ function createLeagueEdition(edition, req, res, next, tournamentDb) {
     if (edition.teams.length >= 2) {
         req.models.Edition.create(edition, function(err, editionDb) {
             if (err) {
-                res.status(500).send({
-                    error: 'Error to update the value.'
-                });
+                next(err);
             } else {
                 createNewPosition(req, editionDb);
                 setupEdition(req, res, tournamentDb, editionDb);
@@ -230,7 +228,7 @@ exports.addEdition = function(req, res, next) {
 
     req.models.Tournament.get(tournament.id, function(err, tournamentDb) {
         if (err) {
-            res.status(500).send("errorrrr pq no definio un tournament");
+            next(new Error("errorrrr pq no definio un tournament"));
         } else {
             edition.league = tournamentDb.id;
             edition.leagueName = tournamentDb.name;
@@ -249,7 +247,7 @@ exports.getEditions = function(req, res, next) {
         league: req.params.tournament
     }).order(ORDER_ID_DESC).run(function(err, editions) {
         if (err) {
-            res.status(500).send(err);
+            next(err);
         } else {
             res.status(200).send(editions);
         }
@@ -265,7 +263,7 @@ exports.getLastEdition = function(req, res, next) {
         id: req.params.lastEdition
     }, function(err, edition) {
         if (err) {
-            res.status(500).send(err);
+            next(err);
         } else {
             res.status(200).send(edition[0]);
         }
@@ -280,7 +278,7 @@ exports.getFixture = function(req, res, next) {
         edition: req.params.edition
     }).order(ORDER_NUMBER_ASC).run(function(err, rounds) {
         if (err) {
-            res.status(500).send(err);
+            next(err);
         } else {
             res.status(200).send(rounds);
         }
@@ -291,11 +289,11 @@ exports.getFixture = function(req, res, next) {
  * Devuelve los campeones de un torneo
  */
 exports.championByTour = function(req, res, next) {
-    req.models.Position.aggregate(["team"], {
+    req.models.Position.aggregate([TEAM], {
         league: req.params.tournament,
         final: 1,
         edition: orm.ne(req.params.lastEdition)
-    }).groupBy("team").count().order('-count').get(function(err, positionsDb) {
+    }).groupBy(TEAM).count().order(ORDER_COUNT_DESC).get(function(err, positionsDb) {
         if (err) {
             next(err);
             return;
@@ -305,43 +303,35 @@ exports.championByTour = function(req, res, next) {
     });
 }
 
+/**
+ * Devuelve los campeones y sus títulos.
+ */
 exports.champions = function(req, res, next) {
-    /*  req.models.Season.get(req.body.lastEdition, function(err, seasonDb) {
-          if (err) {
-              next(err);
-          } else {
-              var editions = new Array();            
-              for (var i in seasonDb.editions) {
-                  editions.push(seasonDb.editions[i].id);
-              }
-              req.models.Position.find({
-                  edition: orm.not_in(editions),
-                  final: 1
-              }).order("team").order("league").run(function(err, positions) {
-                  if (err) {
-                      next(err);
-                  } else {
-                      res.status(200).send(positions);
-                  }
-              });
-          }
-      });*/
-    req.models.Season.get(req.body.lastEdition, function(err, seasonDb) {
-        if (err) {
-            next(err);
-        } else {
-            var editions = new Array();
-            for (var i in seasonDb.editions) {
-                editions.push(seasonDb.editions[i].id);
+    if (req.body.lastEdition) {
+        req.models.Season.get(req.body.lastEdition, function(err, seasonDb) {
+            if (err) {
+                next(err);
+            } else {
+                var editions = new Array();
+                for (var i in seasonDb.editions) {
+                    editions.push(seasonDb.editions[i].id);
+                }
+                req.models.db.driver.execQuery("SELECT position.team, GROUP_CONCAT(league.name SEPARATOR ', ') tournaments, count(*) " +                     "FROM position INNER JOIN tournament league ON position.league = league.id WHERE final = 1 AND " +
+                    "edition NOT IN (?) GROUP BY position.team ORDER BY total DESC", editions,
+                    function(err, positions) {
+                        res.status(200).send(positions);
+                    });
+
             }
-            console.log(editions);
-            req.models.db.driver.execQuery("SELECT position.team, GROUP_CONCAT(league.name) tournaments FROM position " +
-                "INNER JOIN tournament league ON position.league = league.id WHERE final = 1 AND " +
-                "edition NOT IN (?) GROUP BY position.team", editions, function(err, positions){
+        });
+    } else {
+        req.models.db.driver.execQuery("SELECT position.team, GROUP_CONCAT(league.name SEPARATOR ', ') tournaments, count(*) " +
+            "AS total FROM position INNER JOIN tournament league ON position.league = league.id WHERE final = 1 " +
+            "GROUP BY position.team ORDER BY total DESC",
+            function(err, positions) {
                 res.status(200).send(positions);
             });
+    }
 
-        }
-    });
 
 }

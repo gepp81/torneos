@@ -131,9 +131,12 @@ function SeasonPlayController($scope, $modal, $state, $localStorage, $timeout, S
         if ($scope.weekPagination != $scope.size) {
             getRound($scope.editions, $scope.weekPagination);
         } else {
-            Position.define({
-                edition: round[eKey].rounds.edition
-            }, function(data) {}, function(err) {});
+            angular.forEach($scope.editions, function(value, key) {
+                Position.define({
+                    edition: value.id
+                }, function(data) {}, function(err) {});
+            });
+
         }
         getPositions($scope.editions);
     }
@@ -141,22 +144,26 @@ function SeasonPlayController($scope, $modal, $state, $localStorage, $timeout, S
     var getSeason = function() {
         Application.get({},
             function(data) {
-                $scope.season = data;
-                Season.get({
-                        id: data.season
-                    },
-                    function(data) {
-                        $scope.editions = data.editions;
-                        $scope.size = data.size + 1;
-                        if ($localStorage.week) {
-                            $scope.weekPagination = $localStorage.week;
-                        } else {
-                            $scope.weekPagination = data.week;
-                        }
-                        $scope.playedWeek = data.week;
-                        $scope.weekChanged();
-                    },
-                    function(err) {});
+                if (data) {
+                    $scope.season = data;
+                    Season.get({
+                            id: data.season
+                        },
+                        function(data) {
+                            $scope.editions = data.editions;
+                            $scope.size = data.size + 1;
+                            if ($localStorage.week) {
+                                $scope.weekPagination = $localStorage.week;
+                            } else {
+                                $scope.weekPagination = data.week;
+                            }
+                            $scope.playedWeek = data.week;
+                            $scope.weekChanged();
+                        },
+                        function(err) {});
+                } else {
+                    $scope.season = undefined;
+                }
             },
             function(err) {});
     }
@@ -261,7 +268,13 @@ function SeasonPlayController($scope, $modal, $state, $localStorage, $timeout, S
     });
 
     $scope.finalizeSeason = function(editions) {
-        console.log(editions);
+        Application.finalize({
+            season: $scope.season.season
+        }, function(data) {
+
+        }, function(err) {
+
+        });
     }
 
 }

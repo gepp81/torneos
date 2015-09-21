@@ -8,11 +8,13 @@
                 <thead>
                     <th class="alignCenter">Equipo</th>
                     <th class="alignCenter">Títulos</th>
+                    <th class="alignCenter">Cantidad</th>
                 </thead>
                 <tbody class="alignCenter">
                     <tr ng-repeat="item in champions">
                         <td class="paddingLeftOnePercent">{{item.team}}</td>
                         <td class="paddingLeftOnePercent">{{item.tournaments}}</td>
+                        <td class="paddingLeftOnePercent">{{item.total}}</td>
                     </tr>
                 </tbody>
             </table>

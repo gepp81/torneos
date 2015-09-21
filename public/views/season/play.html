@@ -2,12 +2,12 @@
     <div class="panel-heading">
         <h4>Temporada en Juego</h4>
     </div>
-    <div class="dependencyForm">
-
+    <div class="dependencyForm" ng-show="season.season">
         <!-- Table -->
         <div>
             <div style="text-align: center">
-                <pagination class="pagination" total-items="size" items-per-page="1" ng-model="weekPagination" ng-change="weekChanged()" previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último">
+                <pagination class="pagination" total-items="size" items-per-page="1" ng-model="weekPagination" ng-change="weekChanged()"
+                            previous-text="Anterior" next-text="Siguiente" first-text="Primero" last-text="Último">
                 </pagination>
                 <span ng-if="weekPagination != size">
                     <h4>
@@ -24,7 +24,7 @@
             </div>
 
             <accordion close-others="false">
-                <accordion-group ng-repeat="(key, value) in editions" is-open="true" 
+                <accordion-group ng-repeat="(key, value) in editions | orderBy: ['key']" is-open="true" 
                                  ng-show="rounds[value.id].rounds.games.length > 0 || weekPagination == size">
                     <accordion-heading>
                         <h4>{{key}} > {{value.id}} > {{editions[key].type}}</h4>
@@ -39,10 +39,12 @@
                                         <table class="table">
                                             <tr ng-repeat="game in Kvalue.games">
                                                 <td style="width:45%; text-align:right" >{{game.home}}</td>
-                                                <td style="width:5%;background-color: #eee; border: 1px solid #999; text-align: center;">
+                                                <td style="width:5%;background-color: #eee; border: 1px solid #999; 
+                                                           text-align: center;">
                                                     {{game.homeGoals}}
                                                 </td>
-                                                <td style="width:5%;background-color: #eee; border: 1px solid #999;text-align: center;">
+                                                <td style="width:5%;background-color: #eee; border: 1px solid #999; 
+                                                           text-align: center;">
                                                     {{game.awayGoals}}
                                                 </td>
                                                 <td style="width:45%; text-align:left" >{{game.away}}</td>
@@ -70,39 +72,44 @@
                                         <tbody>
                                             <span ng-if="editions[key].type == 'CUP'">
                                                 <tr ng-repeat="item in positions[value.id].positions | 
-                                                               orderBy:['final', '-points', '-dg', 'goals', 'final']">
+                                                               orderBy:['final', '-points', '-dg', 'goals']">
                                             </span>
                                             <span ng-if="editions[key].type == 'LEAGUE'">
                                                 <tr ng-repeat="item in positions[value.id].positions | 
                                                                orderBy:['-points', '-dg', 'goals', 'final']">
                                             </span>
-                                                <td class="alignCenter">
-                                                    <label ng-class="getColorPosition($index + 1)">
-                                                        {{getTextPosition($index + 1)}}
-                                                    </label>
-                                                </td>
-                                                <td>{{item.team}}</td>
-                                                <td>{{item.points}}</td>
-                                                <td>{{item.games}}</td>
-                                                <td>{{item.win}}</td>
-                                                <td>{{item.tie}}</td>
-                                                <td>{{item.lose}}</td>
-                                                <td>{{item.goals}}</td>
-                                                <td>{{item.received}}</td>
-                                                <td>{{item.dg}}</td>
+                                            <td class="alignCenter">
+                                                <label ng-class="getColorPosition($index + 1)">
+                                                    {{getTextPosition($index + 1)}}
+                                                </label>
+                                            </td>
+                                            <td>{{item.team}}</td>
+                                            <td>{{item.points}}</td>
+                                            <td>{{item.games}}</td>
+                                            <td>{{item.win}}</td>
+                                            <td>{{item.tie}}</td>
+                                            <td>{{item.lose}}</td>
+                                            <td>{{item.goals}}</td>
+                                            <td>{{item.received}}</td>
+                                            <td>{{item.dg}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="col-md-6" ng-if="weekPagination == size">
-                                     <button ng-click="defineLeague(positions[value.id].positions, value.id)" 
-                                             class="btn btn-sm btn-info"  ng-show="ties[value.id]">
-                                         Definir
+                                    <button ng-click="defineLeague(positions[value.id].positions, value.id)" 
+                                            class="btn btn-sm btn-info" ng-show="ties[value.id]">
+                                        Definir
                                     </button>
                                 </div>
                             </div>
                         </div>
+                    </div>
                 </accordion-group>
             </accordion>
-            </div>
         </div>
+    </div>
+    <div class="dependencyForm" ng-show="!season.season">
+        <h4>No se encuentra activa ninguna temporada!!!</h4>
+    </div>
+</div>
