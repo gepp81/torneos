@@ -26,7 +26,7 @@
                         <td class="paddingLeftOnePercent">{{getTournaments(item.editions)}}</td>
                         <td>
                             <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal" 
-                                    ng-click="setDefault(item)" ng-click="">
+                                    ng-disabled="isFinalized(item.status)" ng-click="setDefault(item)" ng-click="">
                                 Iniciar
                             </button>
                             <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editModal" ng-click=""

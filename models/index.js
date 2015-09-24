@@ -22,7 +22,12 @@ module.exports = function(db, models) {
         playing: 'integer',
         type: 'text',
         double: 'boolean',
-        startWeek: 'integer'
+        startWeek: 'integer',
+        status: {
+            type: "enum",
+            values: ["Sin Empezar", "Jugando", "Finalizada"],
+            defaultValue: "Sin Empezar"
+        },
     });
 
     models.Position = db.define("position", {
@@ -96,7 +101,7 @@ module.exports = function(db, models) {
     models.Application = db.define("application", {
         season: 'integer'
     });
-    
+
     models.db = db;
 
     // Sincronize db ONLY FOR FIRST

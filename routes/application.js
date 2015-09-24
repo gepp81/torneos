@@ -1,25 +1,65 @@
-var STATUS_PLAYING = 'Jugando';
-var STATUS_FINALIZED = 'Finalizada';
+var PROPERTIES = require('./properties.js');
+var STATUS = PROPERTIES.STATUS;
 var Engine = require('./engine/engine.js');
+var orm = require('orm');
+var async = require('async');
 
-exports.savePlaySeason = function(req, res, next) {
-    req.models.Season.get(req.body.season.id, function(err, seasonDb) {
-        if (err) next(err);
-        seasonDb.status = STATUS_PLAYING;
-        seasonDb.save(seasonDb, function(err) {
-            req.models.Application.get(1, function(err, appDb) {
-                appDb.season = req.body.season.id;
-                appDb.save(function(err) {
+function changeStatusEditions(req, res, next, seasonDb) {
+    var item;
+    async.forEachOf(seasonDb.editions, function(value, key, callback) {
+        req.models.Edition.get(value.id, function(err, editionDb) {
+            if (err) {
+                callback(err);
+            } else {
+                editionDb.status = STATUS.PLAYING;
+                editionDb.save(function(err) {
                     if (err) {
-                        next(err);
+                        callback(err);
                     } else {
-                        res.status(200).send();
+                        callback();
                     }
                 })
-            });
+            }
         });
+    }, function(err){
+        if (err) {
+            next(err);
+        } else {
+            res.status(200).send();
+        }
     });
 
+};
+
+exports.savePlaySeason = function(req, res, next) {
+    req.models.Season.find({
+        status: STATUS.PLAYING
+    }, function(err, seasonsDb) {
+        if (err) {
+            next(err);
+        } else {
+            if (seasonsDb.length == 0) {
+                req.models.Season.get(req.body.season.id, function(err, seasonDb) {
+                    if (err) next(err);
+                    seasonDb.status = STATUS.PLAYING;
+                    seasonDb.save(seasonDb, function(err) {
+                        req.models.Application.get(1, function(err, appDb) {
+                            appDb.season = req.body.season.id;
+                            appDb.save(function(err) {
+                                if (err) {
+                                    next(err);
+                                } else {
+                                    changeStatusEditions(req, res, next, seasonDb);
+                                }
+                            })
+                        });
+                    });
+                });
+            } else {
+                next(new Error("Hay otra temporada en juego."));
+            }
+        }
+    });
 }
 
 exports.getApplication = function(req, res, next) {
@@ -45,7 +85,7 @@ exports.finalizeSeason = function(req, res, next) {
                     if (err) {
                         next(err);
                     } else {
-                        seasonDb[0].status = STATUS_FINALIZED;
+                        seasonDb[0].status = PROPERTIES.FINALIZED;
                         seasonDb[0].save(function(err) {
                             res.status(200).send();
                         })

@@ -6,7 +6,8 @@ var ORDER_ID_DESC = '-id';
 var ORDER_COUNT_DESC = '-count';
 var RoundFactory = require("./factory/round.js");
 var async = require('async');
-var orm = require('orm');
+var PROPERTIES = require('./properties.js');
+var STATUS = PROPERTIES.STATUS;
 
 var EDITION_LEAGUE = "LEAGUE";
 var EDITION_CUP = "CUP";
@@ -206,14 +207,26 @@ function createLeagueEdition(edition, req, res, next, tournamentDb) {
         edition.size = req.body.double ? count * 2 : count;
     }
     if (edition.teams.length >= 2) {
-        req.models.Edition.create(edition, function(err, editionDb) {
+        req.models.Edition.find({
+            status: STATUS.PLAYING
+        }, function(err, editionExists) {
             if (err) {
                 next(err);
             } else {
-                createNewPosition(req, editionDb);
-                setupEdition(req, res, tournamentDb, editionDb);
+                if (editionExists.length > 0) {
+                    next(new Error("Ya existe una edicion en juego de este torneo"));
+                } else {
+                    req.models.Edition.create(edition, function(err, editionDb) {
+                        if (err) {
+                            next(err);
+                        } else {
+                            createNewPosition(req, editionDb);
+                            setupEdition(req, res, tournamentDb, editionDb);
+                        }
+                    });
+                }
             }
-        });
+        })
     } else {
         next(new Error("Cantidad de equipos erronea"));
     }

@@ -27,7 +27,9 @@ function SeasonController($scope, $modal, $state, Seasons, Application) {
     $scope.setDefault = function(item) {
         Application.save({
             season: item
-        }, function(data) {}, function(error) {});
+        }, function(data) {
+            getSeasonsPage(1);
+        }, function(error) {});
     }
 
     $scope.getTournaments = function(editions) {
@@ -36,6 +38,10 @@ function SeasonController($scope, $modal, $state, Seasons, Application) {
             tours.push(i);
         }
         return tours;
+    }
+
+    $scope.isFinalized = function(status) {
+        return status !== "Sin Empezar";
     }
 }
 

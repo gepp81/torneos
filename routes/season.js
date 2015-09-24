@@ -538,7 +538,3 @@ function generateNextRound(req, res, winners, edition, number, double) {
             }
         });
 }
-
-exports.finalize = function(req, res, next) {
-    
-}
