@@ -3,19 +3,35 @@
         Campeones de {{tournament.name}}
     </h3>
     <div class="panel panel-default">
-        <div>
-            <table class="table alignCenter">
-                <thead>
-                    <th class="alignCenter">Equipo</th>
-                    <th class="alignCenter">Cantidad</th>
-                </thead>
-                <tbody class="alignCenter">
-                    <tr ng-repeat="item in champions">
-                        <td class="paddingLeftOnePercent">{{item.team}}</td>
-                        <td class="paddingLeftOnePercent">{{item.count}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <accordion close-others="oneAtATime">
+            <accordion-group heading="Campeones">
+                <table class="table alignCenter">
+                    <thead>
+                        <th class="alignCenter">Equipo</th>
+                        <th class="alignCenter">Cantidad</th>
+                    </thead>
+                    <tbody class="alignCenter">
+                        <tr ng-repeat="item in champions">
+                            <td class="paddingLeftOnePercent">{{item.team}}</td>
+                            <td class="paddingLeftOnePercent">{{item.count}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </accordion-group>
+            <accordion-group heading="Tabla Histórica">
+                <table class="table alignCenter">
+                    <thead>
+                        <th class="alignCenter">Equipo</th>
+                        <th class="alignCenter">Puntos</th>
+                    </thead>
+                    <tbody class="alignCenter">
+                        <tr ng-repeat="item in points | orderBy: ['-total']">
+                            <td class="paddingLeftOnePercent">{{item.team}}</td>
+                            <td class="paddingLeftOnePercent">{{item.total}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </accordion-group>
+        </accordion>
     </div>
 </section>

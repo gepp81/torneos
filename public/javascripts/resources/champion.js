@@ -27,3 +27,20 @@ function ChampionTourResource($resource) {
         }
     });
 };
+
+function PointsTourResource($resource) {
+    return $resource("/historyPoints/:tournament", {}, {
+        getPoints: {
+            method: 'GET',
+            params: {
+                tournament: "@tournamen",
+            },
+            isArray: 'true'
+        },
+        interceptor: {
+            response: function(response) {
+                return response.data;
+            }
+        }
+    });
+};

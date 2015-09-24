@@ -18,7 +18,7 @@
                             </div>
                         </span>
                     </div>
-                    <div class="input-group width100" ng-show="!repeat">
+                    <div class="input-group width100">
                         <span class="input-group-addon width30" id="basic-addon1">
                             Total de Equipos
                         </span>
@@ -49,7 +49,7 @@
                         </span>
                         <span class="form-control">
                             <div class="radio radio-primary radio-inline">
-                                <input type="radio" id="inlineRadio1" value="LEAGUE" name="radioInline" ng-model="type" checked>
+                                <input type="radio" id="inlineRadio1" value="LEAGUE" name="radioInline" ng-model="type">
                                 <label for="inlineRadio1">Liga</label>
                             </div>
                             <div class="radio radio-primary radio-inline">
@@ -62,35 +62,35 @@
                             </div>
                         </span>
                     </div>
-                    <div class="input-group width100" ng-show="!repeat">
+                    <div class="input-group width100">
                         <span class="input-group-addon width30" id="basic-addon1">
-                            Agregar
+                            Equipo x nombre
                         </span>
                         <input type="text" ng-model="teamSelected" 
                                typeahead="team.name for team in teams | filter:$viewValue | limitTo:8" 
                                class="form-control" typeahead-on-select="addToList(teamSelected)">
                     </div>
-                    <div class="input-group width100" ng-show="!repeat">
+                    <div class="input-group width100">
                         <span class="input-group-addon width30" id="basic-addon1">
-                            Agregar Campeones
+                            Equipos x liga
                         </span>
                         <input type="text" ng-model="tournamentSelected" 
                                typeahead="tournament.name for tournament in tournaments | filter:$viewValue | limitTo:8" 
                                class="form-control" typeahead-on-select="selectTournament(tournamentSelected)">
                         <input type="number" ng-model="tournamentTeamsTotal" class="form-control" 
                                placeholder="Por defecto el valor es 1">
-                    </div>                    
+                    </div>
                     <h4>Equipos Agregados</h4>
-                    <table>
-                        <tr ng-repeat="item in selectedItems">
-                            <td>{{item}}</td>
-                            <td>
-                                <button type="submit" class="btn btn-danger btn-sm" ng-click="remover(item)">
-                                    Remover
+                        <div ng-repeat="item in selectedItems" class="row">
+                            <div class="col-md-4">
+                                {{$index + 1 }} - {{item}}
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-danger btn-xs" ng-click="remover(item)">
+                                    x
                                 </button>
-                            </td>
-                        </tr>
-                    </table>
+                            </div>
+                        </div>
                     <input type="hidden" class="form-control" name="id" ng-model="tournament.id" aria-describedby="basic-addon1">
                     <br/>
                     <div class="input-group width100 alignCenter">

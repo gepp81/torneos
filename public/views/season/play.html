@@ -80,7 +80,10 @@
                                             </span>
                                             <td class="alignCenter">
                                                 <label ng-class="getColorPosition($index + 1)">
-                                                    {{getTextPosition($index + 1)}}
+                                                    <i class="fa fa-star" ng-show="getTextPosition($index + 1).start"></i>
+                                                    <span ng-show="!getTextPosition($index + 1).start">
+                                                        {{getTextPosition($index + 1)}}
+                                                    </span>
                                                 </label>
                                             </td>
                                             <td>{{item.team}}</td>

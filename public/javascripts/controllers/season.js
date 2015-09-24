@@ -39,7 +39,7 @@ function SeasonController($scope, $modal, $state, Seasons, Application) {
     }
 }
 
-function SeasonNewController($scope, $modal, $state, $stateParams, SeasonTournament, Tournaments) {
+function SeasonNewController($scope, $modal, $state, $stateParams, SeasonTournament, Tournament) {
 
     $scope.selectedItems = [];
 
@@ -72,7 +72,7 @@ function SeasonNewController($scope, $modal, $state, $stateParams, SeasonTournam
         }
     }
 
-    Tournaments.get({}, function(data) {
+    Tournament.getAll({}, function(data) {
         if (data.length > 0) {
             $scope.tournaments = data;
         }
@@ -229,16 +229,11 @@ function SeasonPlayController($scope, $modal, $state, $localStorage, $timeout, S
     $scope.getTextPosition = function(position) {
         if ($scope.weekPagination != $scope.size) {
             return position;
-        } else {
-            if (position === 1) {
-                return "Campeón";
-            }
-            if (position === 2) {
-                return "Subcampeón";
-            }
-            if (position === 3) {
-                return "Tercero";
-            }
+        }
+        if (position > 0 && position < 4) {
+            var start = {};
+            start.start = true;
+            return start;
         }
         return position;
     }

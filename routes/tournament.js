@@ -316,7 +316,8 @@ exports.champions = function(req, res, next) {
                 for (var i in seasonDb.editions) {
                     editions.push(seasonDb.editions[i].id);
                 }
-                req.models.db.driver.execQuery("SELECT position.team, GROUP_CONCAT(league.name SEPARATOR ', ') tournaments, count(*) " +                     "FROM position INNER JOIN tournament league ON position.league = league.id WHERE final = 1 AND " +
+                console.log(editions);
+                req.models.db.driver.execQuery("SELECT position.team, GROUP_CONCAT(league.name SEPARATOR ', ') tournaments, count(*) " + "AS total FROM position INNER JOIN tournament league ON position.league = league.id WHERE final = 1 AND " +
                     "edition NOT IN (?) GROUP BY position.team ORDER BY total DESC", editions,
                     function(err, positions) {
                         res.status(200).send(positions);
@@ -332,6 +333,16 @@ exports.champions = function(req, res, next) {
                 res.status(200).send(positions);
             });
     }
+}
 
+/**
+ * Devuelve el total de puntos conseguidos por los participantes en las ligas.
+ */
+exports.pointsByTour = function(req, res, next) {
+    req.models.db.driver.execQuery(
+        "SELECT team, sum(win) AS wins, sum(tie) AS ties FROM position WHERE league = ? GROUP BY team", req.params.tournament,
+        function(err, positions) {
+            res.status(200).send(positions);
+        });
 
 }

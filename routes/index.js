@@ -90,6 +90,7 @@ router.get('/seasons/:page', routesSeason.getSeason);
 router.get('/season/:id', routesSeason.get);
 router.put('/season', routesSeason.saveWeek);
 router.post('/season', routesSeason.createSeason);
+router.post('/finalizeSeason', routesSeason.finalize);
 
 router.post('/round', routesSeason.getRound);
 
@@ -102,5 +103,6 @@ router.put('/game', routesSeason.playGames);
 
 router.get('/champions/:tournament/:lastEdition', routesTournament.championByTour);
 router.post('/champions', routesTournament.champions);
+router.get('/historyPoints/:tournament', routesTournament.pointsByTour);
 
 module.exports = router;

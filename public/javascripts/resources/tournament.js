@@ -1,26 +1,21 @@
-function TournamentsResource($resource) {
-    return $resource("/tournaments/getAll/:page", {}, {
-        getAll: {
+function TournamentResource($resource) {
+    return $resource("/tournaments/getAll/:page/:id", {}, {
+        getAllPage: {
             method: 'GET',
             params: {
                 page: "@page"
             }
         },
-        get: {
+        getAll: {
             method: 'GET',
             isArray: 'true'
-        }
-    });
-};
-
-function TournamentResource($resource) {
-    return $resource("/tournament/:id", {}, {
+        },
         get: {
             method: 'GET',
             params: {
                 id: "@id"
             }
-        }
+        }        
     });
 };
 

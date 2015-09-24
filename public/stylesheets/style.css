@@ -101,14 +101,39 @@ body {
 }
 
 .label-position-gold {
-    background-color: goldenrod;
-    font-size: 1em!important;
+    color: goldenrod!important;
+    font-size: 1.3em!important;
 }
 
 .label-position-silver {
-    background-color: silver;
+    color: silver!important;
+    font-size: 1.2em!important;
 }
 
 .label-position-brown {
-    background-color: brown;
+    color: brown!important;
+    font-size: 1.1em!important;
+}
+
+.colorCategory {
+    font-size: 1.2em;
+}
+
+.colorCategoryGold {
+    color: goldenrod;
+}
+
+.colorCategorySilver {
+    color: silver;
+}
+
+.colorCategoryBrown {
+    color: brown;
+}
+
+.colorCategoryDiamond {
+    color: cornflowerblue;
+}
+.colorCategoryRed {
+    color: indianred;
 }

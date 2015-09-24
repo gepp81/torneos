@@ -1,7 +1,7 @@
-function TournamentController($scope, $state, $modal, Tournament, Tournaments) {
+function TournamentController($scope, $state, $modal, Tournament) {
 
     var getTournaments = function(page) {
-        Tournaments.getAll({
+        Tournament.getAllPage({
             page: page
         }, function(data) {
             if (data.tournaments.length > 0) {
@@ -87,7 +87,7 @@ function TournamentSaveController($scope, $modalInstance, TournamentSave, tourna
 
 };
 
-function TournamentEditionController($scope, $state, $stateParams, Tournaments, Team, Edition, Position) {
+function TournamentEditionController($scope, $state, $stateParams, Tournament, Team, Edition, Position) {
     $scope.item = $stateParams.item;
     $scope.selectedItems = new Array();
 
@@ -144,7 +144,7 @@ function TournamentEditionController($scope, $state, $stateParams, Tournaments, 
         console.error("No recupero datos");
     });
 
-    Tournaments.get({},
+    Tournament.getAll({},
         function(data) {
             if (data.length > 0)
                 $scope.tournaments = data;
@@ -176,9 +176,11 @@ function TournamentEditionController($scope, $state, $stateParams, Tournaments, 
             tournament: $scope.item.id,
             lastEdition: $scope.item.editionPlayed
         }, function(data) {
-            if (data.size == (data.teams - 1) * 2)
-                $scope.double = true;
+            $scope.double = data.size == (data.teams.length - 1) * 2 ? true : false;
+            $scope.startWeek = data.startWeek;
             $scope.selectedItems = data.teams;
+            $scope.type = data.type;
+            $scope.selectedOption = { value: data.teams.length };
         }, function(err) {
 
         })
@@ -251,7 +253,7 @@ function FixtureController($scope, $state, $stateParams, Fixture) {
 
 };
 
-function ChampionTourController($scope, $stateParams, ChampionTour) {
+function ChampionTourController($scope, $stateParams, ChampionTour, PointsTour) {
 
     $scope.tournament = $stateParams.item;
 
@@ -265,6 +267,20 @@ function ChampionTourController($scope, $stateParams, ChampionTour) {
         for (var i = 0; i < data.length; i++) {
             var item = data[i];
             $scope.champions.push(item);
+        }
+    });
+
+    query = PointsTour.getPoints({
+        tournament: $scope.tournament.id
+    });
+
+    query.$promise.then(function(data) {
+        $scope.points = [];
+        var item
+        for (var i = 0; i < data.length; i++) {
+            item = data[i];
+            item.total = parseInt(item.wins) * 3 + parseInt(item.ties);
+            $scope.points.push(item);
         }
     });
 

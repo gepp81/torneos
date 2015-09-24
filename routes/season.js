@@ -242,7 +242,9 @@ exports.playGame = function(req, res, next) {
     var number = req.body.number;
     var edition = req.body.edition;
     req.models.Game.get(gameId, function(err, gameDb) {
-        if (!gameDb.awayGoals && !gameDb.homeGoals) {
+        if (err) {
+            next(err);
+        } else if (!gameDb.awayGoals && !gameDb.homeGoals) {
             async.parallel({
                     teams: function(callback) {
                         req.models.Team.find({
@@ -289,6 +291,8 @@ exports.playGame = function(req, res, next) {
                     updateGame(req, res, gameDb, engine.playGame());
                 }
             );
+        } else {
+            next(new Error("Se ha jugado el partido"));
         }
     });
 };
@@ -457,11 +461,13 @@ exports.playGames = function(req, res, next) {
                         }
                     );
                 } else {
-                    next(new Error("Ya se jugo el partido"));
+                    callback(new Error("Ya se jugo el partido"));
                 }
             },
             function(err) {
-                if (!final) {
+                if (err) {
+                    next(err);
+                } else if (!final) {
                     res.status(200).send({});
                 } else {
                     if (winners.length > 0) {
@@ -531,4 +537,8 @@ function generateNextRound(req, res, winners, edition, number, double) {
                 res.status(200).send();
             }
         });
+}
+
+exports.finalize = function(req, res, next) {
+    
 }
