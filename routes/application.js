@@ -4,14 +4,14 @@ var Engine = require('./engine/engine.js');
 var orm = require('orm');
 var async = require('async');
 
-function changeStatusEditions(req, res, next, seasonDb) {
+function changeStatusEditions(req, res, next, seasonDb, status) {
     var item;
     async.forEachOf(seasonDb.editions, function(value, key, callback) {
         req.models.Edition.get(value.id, function(err, editionDb) {
             if (err) {
                 callback(err);
             } else {
-                editionDb.status = STATUS.PLAYING;
+                editionDb.status = status;
                 editionDb.save(function(err) {
                     if (err) {
                         callback(err);
@@ -21,7 +21,7 @@ function changeStatusEditions(req, res, next, seasonDb) {
                 })
             }
         });
-    }, function(err){
+    }, function(err) {
         if (err) {
             next(err);
         } else {
@@ -32,10 +32,6 @@ function changeStatusEditions(req, res, next, seasonDb) {
 };
 
 exports.savePlaySeason = function(req, res, next) {
-    
-    // TODO: cuando inicio la temporada tengo que actualizar las ediciones para decir que estan jugando esas ediciones.
-    // TODO 2: cuando finalizo una temporada finalizo las ediciones.
-    
     req.models.Season.find({
         status: STATUS.PLAYING
     }, function(err, seasonsDb) {
@@ -46,17 +42,21 @@ exports.savePlaySeason = function(req, res, next) {
                 req.models.Season.get(req.body.season.id, function(err, seasonDb) {
                     if (err) next(err);
                     seasonDb.status = STATUS.PLAYING;
-                    seasonDb.save(seasonDb, function(err) {
-                        req.models.Application.get(1, function(err, appDb) {
-                            appDb.season = req.body.season.id;
-                            appDb.save(function(err) {
-                                if (err) {
-                                    next(err);
-                                } else {
-                                    changeStatusEditions(req, res, next, seasonDb);
-                                }
-                            })
-                        });
+                    seasonDb.save(function(err) {
+                        if (err) {
+                            next(err);
+                        } else {
+                            req.models.Application.get(1, function(err, appDb) {
+                                appDb.season = req.body.season.id;
+                                appDb.save(function(err) {
+                                    if (err) {
+                                        next(err);
+                                    } else {
+                                        changeStatusEditions(req, res, next, seasonDb, STATUS.PLAYING);
+                                    }
+                                })
+                            });
+                        }
                     });
                 });
             } else {
@@ -89,9 +89,9 @@ exports.finalizeSeason = function(req, res, next) {
                     if (err) {
                         next(err);
                     } else {
-                        seasonDb[0].status = PROPERTIES.FINALIZED;
+                        seasonDb[0].status = STATUS.FINALIZED;
                         seasonDb[0].save(function(err) {
-                            res.status(200).send();
+                            changeStatusEditions(req, res, next, seasonDb[0], STATUS.FINALIZED);
                         })
                     }
                 });

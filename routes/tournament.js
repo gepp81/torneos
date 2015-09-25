@@ -51,13 +51,24 @@ exports.get = function(req, res, next) {
  * Recupera todos los torneos sin paginar. PAra Autocomplete
  */
 exports.getAll = function(req, res, next) {
+    
+    req.models.db.driver.execQuery("SELECT tournament.* FROM tournament WHERE EXISTS (SELECT * from edition WHERE edition.league = tournament.id AND edition.status = 'Sin Empezar')",
+        function(err, tournaments) {
+            if (err) {
+                next(err);
+                return;
+            }
+            res.status(200).send(tournaments);
+        });
+
+    /*
     req.models.Tournament.find().order(ORDER_NAME_ASC).run(function(err, tournaments) {
         if (err) {
             next(err);
         } else {
             res.status(200).send(tournaments);
         }
-    });
+    });*/
 };
 
 /**
@@ -209,7 +220,7 @@ function createLeagueEdition(edition, req, res, next, tournamentDb) {
     }
     if (edition.teams.length >= 2) {
         req.models.Edition.find({
-            status:[STATUS.PLAYING, STATUS.NOT_STARTED],
+            status: [STATUS.PLAYING, STATUS.NOT_STARTED],
             league: tournamentDb.id
         }, function(err, editionExists) {
             if (err) {
@@ -304,50 +315,32 @@ exports.getFixture = function(req, res, next) {
  * Devuelve los campeones de un torneo
  */
 exports.championByTour = function(req, res, next) {
-    req.models.Position.aggregate([TEAM], {
-        league: req.params.tournament,
-        final: 1,
-        edition: orm.ne(req.params.lastEdition)
-    }).groupBy(TEAM).count().order(ORDER_COUNT_DESC).get(function(err, positionsDb) {
-        if (err) {
-            next(err);
-            return;
-        } else {
-            res.status(200).send(positionsDb);
-        }
-    });
+    req.models.db.driver.execQuery("SELECT position.team, count(*) AS count" +
+        " FROM position INNER JOIN edition edi ON position.edition = edi.id WHERE final = 1 " +
+        "AND edi.status = ? AND edi.league = ? GROUP BY position.team ORDER BY count DESC", [STATUS.FINALIZED, req.params.tournament],
+        function(err, positions) {
+            if (err) {
+                next(err);
+                return;
+            }
+            res.status(200).send(positions);
+        });
 }
 
 /**
  * Devuelve los campeones y sus títulos.
  */
 exports.champions = function(req, res, next) {
-    if (req.body.lastEdition) {
-        req.models.Season.get(req.body.lastEdition, function(err, seasonDb) {
+    req.models.db.driver.execQuery("SELECT position.team, GROUP_CONCAT(edi.leagueName SEPARATOR ', ') tournaments, count(*) " +
+        "AS total FROM position INNER JOIN edition edi ON position.edition = edi.id WHERE final = 1 " +
+        "AND edi.status = ? GROUP BY position.team ORDER BY total DESC", [STATUS.FINALIZED],
+        function(err, positions) {
             if (err) {
                 next(err);
-            } else {
-                var editions = new Array();
-                for (var i in seasonDb.editions) {
-                    editions.push(seasonDb.editions[i].id);
-                }
-                console.log(editions);
-                req.models.db.driver.execQuery("SELECT position.team, GROUP_CONCAT(league.name SEPARATOR ', ') tournaments, count(*) " + "AS total FROM position INNER JOIN tournament league ON position.league = league.id WHERE final = 1 AND " +
-                    "edition NOT IN (?) GROUP BY position.team ORDER BY total DESC", editions,
-                    function(err, positions) {
-                        res.status(200).send(positions);
-                    });
-
+                return;
             }
+            res.status(200).send(positions);
         });
-    } else {
-        req.models.db.driver.execQuery("SELECT position.team, GROUP_CONCAT(league.name SEPARATOR ', ') tournaments, count(*) " +
-            "AS total FROM position INNER JOIN tournament league ON position.league = league.id WHERE final = 1 " +
-            "GROUP BY position.team ORDER BY total DESC",
-            function(err, positions) {
-                res.status(200).send(positions);
-            });
-    }
 }
 
 /**
