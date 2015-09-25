@@ -1,5 +1,6 @@
 exports.STATUS = {
     PLAYING: 'Jugando',
     FINALIZED: 'Finalizada',
-    CANCEL: 'Cancelada'
+    CANCEL: 'Cancelada',
+    NOT_STARTED: 'Sin Empezar'
 }

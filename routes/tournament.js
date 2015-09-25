@@ -6,6 +6,7 @@ var ORDER_ID_DESC = '-id';
 var ORDER_COUNT_DESC = '-count';
 var RoundFactory = require("./factory/round.js");
 var async = require('async');
+var orm = require('orm');
 var PROPERTIES = require('./properties.js');
 var STATUS = PROPERTIES.STATUS;
 
@@ -208,7 +209,8 @@ function createLeagueEdition(edition, req, res, next, tournamentDb) {
     }
     if (edition.teams.length >= 2) {
         req.models.Edition.find({
-            status: STATUS.PLAYING
+            status:[STATUS.PLAYING, STATUS.NOT_STARTED],
+            league: tournamentDb.id
         }, function(err, editionExists) {
             if (err) {
                 next(err);
