@@ -325,12 +325,18 @@ var definePositions = function(req, res, positionDb) {
     var i = 1;
     async.eachSeries(positionDb, function(value, callback) {
         value.final = i;
-        value.save(function(err) {});
+        console.log(value.team + " " + value.final);
+        value.save(function(err) {
+            if (err) {
+                callback(err)
+            } else {
+                callback();
+            }
+        });
         i++;
-        callback();
     }, function(err) {
         if (err) {
-            res.status(500).send(err);
+            next(err);
         } else {
             res.status(200).send(positionDb);
         }

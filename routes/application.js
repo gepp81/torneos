@@ -32,6 +32,10 @@ function changeStatusEditions(req, res, next, seasonDb) {
 };
 
 exports.savePlaySeason = function(req, res, next) {
+    
+    // TODO: cuando inicio la temporada tengo que actualizar las ediciones para decir que estan jugando esas ediciones.
+    // TODO 2: cuando finalizo una temporada finalizo las ediciones.
+    
     req.models.Season.find({
         status: STATUS.PLAYING
     }, function(err, seasonsDb) {
