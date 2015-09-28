@@ -71,7 +71,7 @@ module.exports = function RoundFactory(edition, double) {
                 round.final = !this.double;
                 fix.push(round);
                 if (this.double) {
-                    round = get8Round(this.edition, teams[1], teams[0], teams[3], teams[2], teams[4], teams[5], teams[7], teams[6]);
+                    round = get8Round(this.edition, teams[1], teams[0], teams[3], teams[2], teams[5], teams[4], teams[7], teams[6]);
                     round.final = true;
                     fix.push(round);
                 }

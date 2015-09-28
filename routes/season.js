@@ -526,9 +526,9 @@ function generateNextRound(req, res, winners, edition, number, double) {
                         function(err, roundDb) {
                             if (roundDb.length > 0) {
                                 var gamesDb = roundDb[0].games;
-                                for (var i = 0; i < gamesDb.length; i = i + 2) {
-                                    gamesDb[i].home = winners[i + 1];
-                                    gamesDb[i].away = winners[i];
+                                for (var i = 0; i < gamesDb.length; i++) {
+                                    gamesDb[i].away = winners[i * 2];
+                                    gamesDb[i].home = winners[i * 2 + 1];
                                 }
                                 for (var key in gamesDb) {
                                     var gameDb = gamesDb[key];

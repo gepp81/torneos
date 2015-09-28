@@ -176,7 +176,7 @@ function TournamentEditionController($scope, $state, $stateParams, Tournament, T
             tournament: $scope.item.id,
             lastEdition: $scope.item.editionPlayed
         }, function(data) {
-            $scope.double = data.size == (data.teams.length - 1) * 2 ? true : false;
+            $scope.double = data.double;
             $scope.startWeek = data.startWeek;
             $scope.selectedItems = data.teams;
             $scope.type = data.type;
