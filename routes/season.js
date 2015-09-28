@@ -365,6 +365,7 @@ function finalizeSeries(positionsDb, req, res, next) {
                     calculateValue = Math.floor(Math.random() * 100) + sum;
                 }
                 value.valueSum = calculateValue;
+                value.points = parseInt(value.win) * 3 + parseInt(value.tie);
                 callback();
             })
         },

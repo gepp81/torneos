@@ -52,23 +52,21 @@ exports.get = function(req, res, next) {
  */
 exports.getAll = function(req, res, next) {
     
-    req.models.db.driver.execQuery("SELECT tournament.* FROM tournament WHERE EXISTS (SELECT * from edition WHERE edition.league = tournament.id AND edition.status = 'Sin Empezar')",
+    /*req.models.db.driver.execQuery("SELECT tournament.* FROM tournament WHERE EXISTS (SELECT * from edition WHERE edition.league = tournament.id AND edition.status = 'Sin Empezar')",
         function(err, tournaments) {
             if (err) {
                 next(err);
                 return;
             }
             res.status(200).send(tournaments);
-        });
-
-    /*
+        });*/
     req.models.Tournament.find().order(ORDER_NAME_ASC).run(function(err, tournaments) {
         if (err) {
             next(err);
         } else {
             res.status(200).send(tournaments);
         }
-    });*/
+    });
 };
 
 /**
