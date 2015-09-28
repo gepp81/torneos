@@ -27,6 +27,65 @@ module.exports = function RoundFactory(edition, double) {
         return setNumber(finalFix);
     }
 
+    this.cup2Round = function(fix, team1, team2) {
+        var round = get2Round(this.edition, team1, team2);
+        round.final = !this.double;
+        fix.push(round);
+        console.log(this.double);
+        if (this.double) {
+            round = get2Round(this.edition, team2, team1);
+            round.final = true;
+            fix.push(round);
+        }
+        return fix;
+    }
+
+    this.cup4Round = function(fix, team1, team2, team3, team4) {
+        var round = get4Round(this.edition, team1, team2, team3, team4);
+        fix.push(round);
+        round.final = !this.double;
+        console.log(this.double);
+        if (this.double) {
+            round = get4Round(this.edition, team2, team1, team4, team3);
+            round.final = true;
+            fix.push(round);
+        }
+        fix = this.cup2Round(fix, null, null);
+        return fix;
+    }
+
+    this.cup8Round = function(fix, team1, team2, team3, team4, team5, team6, team7, team8) {
+        var round = get8Round(this.edition, team1, team2, team3, team4, team5, team6, team7, team8);
+        fix.push(round);
+        round.final = !this.double;
+        console.log(this.double);
+        if (this.double) {
+            round = get8Round(this.edition, team2, team1, team4, team3, team6, team5, team8, team7);
+            round.final = true;
+            fix.push(round);
+        }
+        fix = this.cup4Round(fix, null, null, null, null);
+        return fix;
+    }
+    
+    this.cup16Round = function(fix, teams) {
+        var round = get8Round(this.edition, teams[0], teams[1], teams[2], teams[3], teams[4], teams[5], teams[6], teams[7]);
+        var roundSecond = get8Round(this.edition, teams[8], teams[9], teams[10], teams[11], teams[12], teams[13], teams[14], teams[15]);
+        round.games.concat(roundSecond.games);
+        fix.push(round);
+        round.final = !this.double;
+        console.log(this.double);
+        if (this.double) {
+            round = get8Round(this.edition, teams[1], teams[0], teams[3], teams[2], teams[5], teams[4], teams[7], teams[6]);
+            roundSecond = get8Round(this.edition, teams[9], teams[8], teams[11], teams[10], teams[13], teams[12], teams[15], teams[14]);
+            round.games.concat(roundSecond.games);
+            round.final = true;
+            fix.push(round);
+        }
+        fix = this.cup8Round(fix, null, null, null, null, null, null, null, null);
+        return fix;
+    }    
+
     this.getFixture = function() {
         if (this.type === "LEAGUE") {
             var lenghTour;
@@ -46,53 +105,21 @@ module.exports = function RoundFactory(edition, double) {
         if (this.type === "CUP") {
             if (this.teams.length == 4) {
                 var fix = new Array();
-                var round = get4Round(this.edition, this.teams[0], this.teams[1], this.teams[2], this.teams[3]);
-                fix.push(round);
-                round.final = !this.double;
-                if (this.double) {
-                    round = get4Round(this.edition, this.teams[1], this.teams[0], this.teams[3], this.teams[2]);
-                    round.final = true;
-                    fix.push(round);
-                }
-                round = get2Round(this.edition, null, null);
-                round.final = !this.double;
-                fix.push(round);
-                if (this.double) {
-                    round = get2Round(this.edition, null, null);
-                    round.final = true;
-                    fix.push(round);
-                }
+                fix = this.cup4Round(fix, this.teams[0], this.teams[1], this.teams[2], this.teams[3]);
                 return setNumber(fix);
             }
             if (this.teams.length == 8) {
                 var fix = new Array();
                 var teams = this.teams;
-                var round = get8Round(this.edition, teams[0], teams[1], teams[2], teams[3], teams[4], teams[5], teams[6], teams[7]);
-                round.final = !this.double;
-                fix.push(round);
-                if (this.double) {
-                    round = get8Round(this.edition, teams[1], teams[0], teams[3], teams[2], teams[5], teams[4], teams[7], teams[6]);
-                    round.final = true;
-                    fix.push(round);
-                }
-                round = get4Round(this.edition, null, null, null, null);
-                round.final = !this.double;
-                fix.push(round);
-                if (this.double) {
-                    round = get4Round(this.edition, null, null, null, null);
-                    round.final = true;
-                    fix.push(round);
-                }
-                round = get2Round(this.edition, null, null);
-                round.final = !this.double;
-                fix.push(round);
-                if (this.double) {
-                    round = get2Round(this.edition, null, null);
-                    round.final = true;
-                    fix.push(round);
-                }
+                fix = this.cup8Round(fix, teams[0], teams[1], teams[2], teams[3], teams[4], teams[5], teams[6], teams[7]);
                 return setNumber(fix);
             }
+            if (this.teams.length == 16) {
+                var fix = new Array();
+                var teams = this.teams;
+                fix = this.cup16Round(fix, teams);
+                return setNumber(fix);
+            }            
         }
     }
 

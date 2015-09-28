@@ -121,6 +121,8 @@ function TournamentEditionController($scope, $state, $stateParams, Tournament, T
         value: 4
     }, {
         value: 8
+    }, {
+        value: 16
     }];
 
     $scope.cancel = function() {
@@ -222,6 +224,15 @@ function EditionController($scope, $state, $stateParams, Edition) {
         }, function(error) {
             console.error("No recupero datos");
         });
+    }
+    
+    $scope.remove = function(item) {
+        Edition.remove({
+            tournament: item.league,
+            edition: item.id
+        }, function(data){
+        }, function(err){
+        })
     }
 
     getEditions();

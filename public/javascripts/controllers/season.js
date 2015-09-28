@@ -152,21 +152,23 @@ function SeasonPlayController($scope, $modal, $state, $localStorage, $timeout, S
             function(data) {
                 if (data) {
                     $scope.season = data;
-                    Season.get({
-                            id: data.season
-                        },
-                        function(data) {
-                            $scope.editions = data.editions;
-                            $scope.size = data.size + 1;
-                            if ($localStorage.week) {
-                                $scope.weekPagination = $localStorage.week;
-                            } else {
-                                $scope.weekPagination = data.week;
-                            }
-                            $scope.playedWeek = data.week;
-                            $scope.weekChanged();
-                        },
-                        function(err) {});
+                    if (data.season) {
+                        Season.get({
+                                id: data.season
+                            },
+                            function(data) {
+                                $scope.editions = data.editions;
+                                $scope.size = data.size + 1;
+                                if ($localStorage.week) {
+                                    $scope.weekPagination = $localStorage.week;
+                                } else {
+                                    $scope.weekPagination = data.week;
+                                }
+                                $scope.playedWeek = data.week;
+                                $scope.weekChanged();
+                            },
+                            function(err) {});
+                    }
                 } else {
                     $scope.season = undefined;
                 }

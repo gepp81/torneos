@@ -103,11 +103,11 @@ exports.finalizeSeason = function(req, res, next) {
 exports.testEngine = function(req, res, next) {
     var home = {
         name: "home",
-        skill: "8,8,8,8,8,8,8,8,8,8"
+        skill: "8,9,9,7,7,7,8,8,8,8"
     }
     var away = {
         name: "away",
-        skill: "8,8,8,8,8,8,8,8,8,8"
+        skill: "8,5,7,6,6,6,6,5,5,6"
     }
     var game = {
         home: home,

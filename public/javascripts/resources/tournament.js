@@ -15,7 +15,7 @@ function TournamentResource($resource) {
             params: {
                 id: "@id"
             }
-        }        
+        }
     });
 };
 
@@ -44,6 +44,13 @@ function EditionResource($resource) {
                 tournament: "@tournament",
                 edition: "@edition",
                 double: "@double"
+            }
+        },
+        remove: {
+            method: 'DELETE',
+            data: {
+                tournament: "@tournament",
+                edition: "@edition"
             }
         },
         getAll: {
@@ -116,7 +123,7 @@ function PositionResource($resource) {
                 response: function(response) {
                     return response.data;
                 }
-            }            
+            }
         },
         define: {
             method: 'PUT',

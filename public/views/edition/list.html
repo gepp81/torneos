@@ -26,12 +26,13 @@
                         <td>{{item.teams}}</td>
                         <td>{{item.status}}</td>
                         <td>
-                            <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#removeModal" 
+                            <button class="btn btn-info btn-sm" data-toggle="modal" data-target="#removeModal"
                                     ng-click="getFixture(item)">
                                 Ver Fix
                             </button>
-                            <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#removeModal" ng-click="remove(item)"
-                                    ng-disabled="true" disabled="disabled">
+                            <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#removeModal"
+                                    ng-really-message="Eliminar la edición {{item.id}}?" ng-really-click="remove(item)"
+                                    ng-disabled="true">
                                 Eliminar
                             </button>
                         </td>
