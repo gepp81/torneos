@@ -82,7 +82,12 @@ module.exports = function(db, models) {
             unique: true
         },
         editionNumber: String,
-        editionPlayed: String
+        editionPlayed: String,
+        type: {
+            type: "enum",
+            values: ["a", "b", "c", "i"],
+            defaultValue: "a"
+        }        
     });
 
     models.Season = db.define("season", {

@@ -7,6 +7,7 @@ var ORDER_COUNT_DESC = '-count';
 var RoundFactory = require("./factory/round.js");
 var async = require('async');
 var orm = require('orm');
+var _ = require('underscore');
 var PROPERTIES = require('./properties.js');
 var STATUS = PROPERTIES.STATUS;
 
@@ -51,7 +52,7 @@ exports.get = function(req, res, next) {
  * Recupera todos los torneos sin paginar. PAra Autocomplete
  */
 exports.getAll = function(req, res, next) {
-    
+
     /*req.models.db.driver.execQuery("SELECT tournament.* FROM tournament WHERE EXISTS (SELECT * from edition WHERE edition.league = tournament.id AND edition.status = 'Sin Empezar')",
         function(err, tournaments) {
             if (err) {
@@ -329,9 +330,13 @@ exports.championByTour = function(req, res, next) {
  * Devuelve los campeones y sus títulos.
  */
 exports.champions = function(req, res, next) {
-    req.models.db.driver.execQuery("SELECT position.team, GROUP_CONCAT(edi.leagueName SEPARATOR ', ') tournaments, count(*) " +
-        "AS total FROM position INNER JOIN edition edi ON position.edition = edi.id WHERE final = 1 " +
-        "AND edi.status = ? GROUP BY position.team ORDER BY total DESC", [STATUS.FINALIZED],
+
+    req.models.db.driver.execQuery("SELECT position.team, count(*) AS total, " +
+        "sum(if(tour.type = 'c', 1, 0)) AS c, sum(if(tour.type = 'a', 1, 0)) AS a," +
+        "sum(if(tour.type = 'b', 1, 0)) AS b, sum(if(tour.type = 'i', 1, 0)) AS i " +                                   
+        "FROM position INNER JOIN edition edi ON position.edition = edi.id " +
+        "INNER JOIN tournament tour ON edi.league = tour.id WHERE final = 1 " +
+        "AND edi.status = ? GROUP BY position.team ORDER BY i DESC, a DESC, c DESC, b DESC, total DESC", [STATUS.FINALIZED],
         function(err, positions) {
             if (err) {
                 next(err);

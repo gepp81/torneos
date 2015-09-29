@@ -65,6 +65,18 @@ function TournamentController($scope, $state, $modal, Tournament) {
 function TournamentSaveController($scope, $modalInstance, TournamentSave, tournament) {
     $scope.tournament = tournament.item;
 
+    $scope.options = [{
+        value: 'a'
+    }, {
+        value: 'b'
+    }, {
+        value: 'c'
+    }, {
+        value: 'i'
+    }];
+    
+    $scope.selectedOption = { value: $scope.tournament.type };
+
     $scope.ok = function() {
         if ($scope.tournament.id) {
             TournamentSave.update({
@@ -182,7 +194,9 @@ function TournamentEditionController($scope, $state, $stateParams, Tournament, T
             $scope.startWeek = data.startWeek;
             $scope.selectedItems = data.teams;
             $scope.type = data.type;
-            $scope.selectedOption = { value: data.teams.length };
+            $scope.selectedOption = {
+                value: data.teams.length
+            };
         }, function(err) {
 
         })
@@ -225,14 +239,12 @@ function EditionController($scope, $state, $stateParams, Edition) {
             console.error("No recupero datos");
         });
     }
-    
+
     $scope.remove = function(item) {
         Edition.remove({
             tournament: item.league,
             edition: item.id
-        }, function(data){
-        }, function(err){
-        })
+        }, function(data) {}, function(err) {})
     }
 
     getEditions();

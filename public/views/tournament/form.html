@@ -14,6 +14,14 @@
                     <input type="text" class="form-control" name="name" ng-model="tournament.name" placeholder="Nombre" 
                            aria-describedby="basic-addon1" ng-minlength="1" ng-maxlength="60" required />
                 </div>
+                <div class="input-group">
+                    <span class="input-group-addon" id="basic-addon1">
+                        Tipo
+                    </span>
+                    <select ng-options="item as item.value for item in options track by item.value" 
+                            ng-model="selectedOption" class="form-control">
+                    </select>                    
+                </div>                
                 <input type="hidden" class="form-control" name="id" ng-model="tournament.id" aria-describedby="basic-addon1">        
                 <br/>
                 <div class="input-group width100 alignCenter">

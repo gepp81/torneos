@@ -6,15 +6,36 @@
         <div>
             <table class="table alignCenter">
                 <thead>
-                    <th class="alignCenter">Equipo</th>
-                    <th class="alignCenter">Títulos</th>
-                    <th class="alignCenter">Cantidad</th>
+                    <tr>
+                        <th class="alignCenter">Equipo</th>
+                        <th colspan="4" class="alignCenter">Títulos</th>
+                        <th class="alignCenter">Cantidad</th>
+                    </tr>
+                    <tr>
+                        <th class="alignCenter"></th>
+                        <th class="alignCenter">
+                            <i class="fa fa-trophy fa-lg colorCategoryGold"></i>
+                        </th>
+                        <th class="alignCenter">
+                            <i class="fa fa-diamond fa-lg colorCategoryDiamond"></i>
+                        </th>
+                        <th class="alignCenter">
+                            <i class="fa fa-star fa-lg colorCategorySilver"></i>
+                        </th>
+                        <th class="alignCenter">
+                            <i class="fa fa-rocket fa-lg colorCategoryBrown"></i>
+                        </th>
+                        <th class="alignCenter"></th>
+                    </tr>
                 </thead>
                 <tbody class="alignCenter">
                     <tr ng-repeat="item in champions">
-                        <td class="paddingLeftOnePercent">{{item.team}}</td>
-                        <td class="paddingLeftOnePercent">{{item.tournaments}}</td>
-                        <td class="paddingLeftOnePercent">{{item.total}}</td>
+                        <td class="alignCenter">{{item.team}}</td>
+                        <td class="alignCenter">{{item.i}}</td>
+                        <td class="alignCenter">{{item.a}}</td>
+                        <td class="alignCenter">{{item.c}}</td>
+                        <td class="alignCenter">{{item.b}}</td>
+                        <td class="alignCenter">{{item.total}}</td>
                     </tr>
                 </tbody>
             </table>
