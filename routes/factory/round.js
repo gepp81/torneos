@@ -1,3 +1,5 @@
+var PROPERTIES = require('../properties.js');
+
 module.exports = function RoundFactory(edition, double) {
 
     this.teams = edition.teams;
@@ -27,6 +29,10 @@ module.exports = function RoundFactory(edition, double) {
         return setNumber(finalFix);
     }
 
+    /**
+     * Fixture para copas
+     */
+
     this.cup2Round = function(fix, team1, team2) {
         var round = get2Round(this.edition, team1, team2);
         round.final = !this.double;
@@ -44,7 +50,6 @@ module.exports = function RoundFactory(edition, double) {
         var round = get4Round(this.edition, team1, team2, team3, team4);
         fix.push(round);
         round.final = !this.double;
-        console.log(this.double);
         if (this.double) {
             round = get4Round(this.edition, team2, team1, team4, team3);
             round.final = true;
@@ -58,7 +63,6 @@ module.exports = function RoundFactory(edition, double) {
         var round = get8Round(this.edition, team1, team2, team3, team4, team5, team6, team7, team8);
         fix.push(round);
         round.final = !this.double;
-        console.log(this.double);
         if (this.double) {
             round = get8Round(this.edition, team2, team1, team4, team3, team6, team5, team8, team7);
             round.final = true;
@@ -67,42 +71,44 @@ module.exports = function RoundFactory(edition, double) {
         fix = this.cup4Round(fix, null, null, null, null);
         return fix;
     }
-    
+
     this.cup16Round = function(fix, teams) {
         var round = get8Round(this.edition, teams[0], teams[1], teams[2], teams[3], teams[4], teams[5], teams[6], teams[7]);
         var roundSecond = get8Round(this.edition, teams[8], teams[9], teams[10], teams[11], teams[12], teams[13], teams[14], teams[15]);
-        round.games.concat(roundSecond.games);
+        round.games = round.games.concat(roundSecond.games);
         fix.push(round);
         round.final = !this.double;
-        console.log(this.double);
         if (this.double) {
             round = get8Round(this.edition, teams[1], teams[0], teams[3], teams[2], teams[5], teams[4], teams[7], teams[6]);
             roundSecond = get8Round(this.edition, teams[9], teams[8], teams[11], teams[10], teams[13], teams[12], teams[15], teams[14]);
-            round.games.concat(roundSecond.games);
+            round.games = round.games.concat(roundSecond.games);
             round.final = true;
             fix.push(round);
         }
         fix = this.cup8Round(fix, null, null, null, null, null, null, null, null);
         return fix;
-    }    
+    }
 
+    /**
+     * Crea el fixture con los datos seteados
+     */
     this.getFixture = function() {
-        if (this.type === "LEAGUE") {
-            var lenghTour;
+        if (this.type === PROPERTIES.EDITION.LEAGUE) {
+            var lengthTour;
             if (this.teams.length == 4) {
-                lenghTour = get4Fixture;
+                lengthTour = get4Fixture;
             }
             if (this.teams.length == 8) {
-                lenghTour = get8Fixture;
+                lengthTour = get8Fixture;
             }
-            var first = lenghTour(this.edition, this.teams);
+            var first = lengthTour(this.edition, this.teams);
             var second = [];
             if (this.double) {
-                second = lenghTour(this.edition, changeTeamsPosition(this.teams));
+                second = lengthTour(this.edition, changeTeamsPosition(this.teams));
             }
             return concatRounds(first, second);
         }
-        if (this.type === "CUP") {
+        if (this.type === PROPERTIES.EDITION.CUP) {
             if (this.teams.length == 4) {
                 var fix = new Array();
                 fix = this.cup4Round(fix, this.teams[0], this.teams[1], this.teams[2], this.teams[3]);
@@ -119,10 +125,13 @@ module.exports = function RoundFactory(edition, double) {
                 var teams = this.teams;
                 fix = this.cup16Round(fix, teams);
                 return setNumber(fix);
-            }            
+            }
         }
     }
 
+    /**
+     * Devuelve un partido
+     */
     function getMatch(home, away) {
         var game = {
             home: home,
@@ -131,6 +140,9 @@ module.exports = function RoundFactory(edition, double) {
         return game;
     }
 
+    /**
+     * Creacion de rondas de 2, 4 u 8 equipos
+     */
     function get2Round(edition, t1, t2) {
         var round = {
             edition: edition
@@ -161,6 +173,10 @@ module.exports = function RoundFactory(edition, double) {
         round.games.push(getMatch(t7, t8));
         return round;
     }
+
+    /**
+     * Fixtures para ligas
+     */
 
     function get4Fixture(edition, teams) {
         var fix = new Array();

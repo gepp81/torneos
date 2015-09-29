@@ -1,12 +1,7 @@
-var LIMIT = 20;
-var ORDER_ID_ASC = 'id';
-var ORDER_ID_DESC = '-id';
-var ORDER_FINAL_ASC = 'final';
-var ORDER_NUMBER_ASC = 'number';
-var EDITION_LEAGUE = "LEAGUE";
-var EDITION_CUP = "CUP";
 var async = require('async');
 var Engine = require('./engine/engine.js');
+var PROPERTIES = require('./properties.js');
+var QUERY = PROPERTIES.QUERY, ORDER = PROPERTIES.ORDER, TEAM = PROPERTIES.TEAM;
 
 
 /**
@@ -16,8 +11,8 @@ exports.getSeason = function(req, res, next) {
     async.parallel({
             seasons: function(callback) {
                 var page = req.params.page ? req.params.page : 1;
-                page = (page - 1) * LIMIT;
-                req.models.Season.find().order(ORDER_ID_DESC).limit(LIMIT).offset(page).run(function(err, seasons) {
+                page = (page - 1) * QUERY.LIMIT_20;
+                req.models.Season.find().order(ORDER.ID_DESC).limit(QUERY.LIMIT_20).offset(page).run(function(err, seasons) {
                     if (err) {
                         callback(err);
                         return;
@@ -67,7 +62,7 @@ exports.createSeason = function(req, res, next) {
         async.forEachOf(tournaments, function(value, key, callback) {
                 req.models.Edition.find({
                     leagueName: value
-                }).order(ORDER_ID_DESC).limit(1).run(function(err, editionDb) {
+                }).order(ORDER.ID_DESC).limit(1).run(function(err, editionDb) {
                     if (err) return callback(err);
                     configs[value] = {
                         id: editionDb[0].id,
@@ -116,7 +111,7 @@ exports.getRound = function(req, res, next) {
                 req.models.Round.find({
                     edition: value.id,
                     number: req.body.week - value.startWeek + 1
-                }).order(ORDER_NUMBER_ASC).run(function(err, rounds) {
+                }).order(ORDER.NUMBER).run(function(err, rounds) {
                     if (err) return callback(err);
                     configs[value.id] = {
                         rounds: rounds[0],
@@ -145,7 +140,7 @@ exports.getPositions = function(req, res, next) {
         async.forEachOf(editions, function(value, key, callback) {
                 req.models.Position.find({
                     edition: value.id
-                }).order(ORDER_ID_ASC).run(function(err, positions) {
+                }).order(ORDER.ID).run(function(err, positions) {
                     if (err) return callback(err);
                     configs[value.id] = {
                         positions: positions
@@ -177,7 +172,7 @@ exports.getPositionByTournament = function(req, res, next) {
         } else {
             req.models.Position.find({
                 edition: tourDb[0].editionPlayed
-            }).order(ORDER_FINAL_ASC).limit(parseInt(req.params.number)).run(function(err, posDb) {
+            }).order(ORDER.FINAL).limit(parseInt(req.params.number)).run(function(err, posDb) {
                 if (err) {
                     next(err);
                     return;
@@ -325,7 +320,6 @@ var definePositions = function(req, res, positionDb) {
     var i = 1;
     async.eachSeries(positionDb, function(value, callback) {
         value.final = i;
-        console.log(value.team + " " + value.final);
         value.save(function(err) {
             if (err) {
                 callback(err)
@@ -354,7 +348,7 @@ function finalizeSeries(positionsDb, req, res, next) {
             }, function(err, teamDb) {
                 if (err) return callback(err);
 
-                var skills = teamDb[0].skill.split(",");
+                var skills = teamDb[0].skill.split(TEAM.SPLITTER);
                 var sum = 0;
                 for (var i = 0; i < skills.length; i++) {
                     sum = sum + parseInt(skills[i]);

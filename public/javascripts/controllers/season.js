@@ -199,7 +199,9 @@ function SeasonPlayController($scope, $modal, $state, $localStorage, $timeout, S
                     getRound($scope.editions, $scope.weekPagination);
                     $timeout(Position.define({
                         edition: round[eKey].rounds.edition
-                    }, function(data) {}, function(err) {}), 10000);
+                    }, function(data) {
+                        $scope.positions[eKey].positions = data;
+                    }, function(err) {}), 10000);
 
                 }, function(err) {});
             }

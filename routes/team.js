@@ -1,8 +1,6 @@
-var LIMIT = 20;
-var ORDER_NAME_ASC = 'name';
-var SKILL_SEPARATOR = ",";
-var SKILL_LENGTH = 10;
 var async = require("async");
+var PROPERTIES = require('./properties.js');
+var ORDER = PROPERTIES.ORDER, TEAM = PROPERTIES.TEAM;
 
 /**
  * Crea un nuevo equipo
@@ -10,8 +8,8 @@ var async = require("async");
 exports.create = function(req, res, next) {
     var team = req.body.team;
     if (team && team.name) {
-        var skill = team.skill.split(SKILL_SEPARATOR);
-        if (skill.length == SKILL_LENGTH) {
+        var skill = team.skill.split(TEAM.SPLITTER);
+        if (skill.length == TEAM.LENGTH) {
             req.models.Team.create(team, function(err, teamDb) {
                 if (err) {
                     next(err);
@@ -78,7 +76,7 @@ exports.getAll = function(req, res, next) {
                 }
                 page = (page - 1) * limit;
                 console.log(req.params.size);
-                req.models.Team.find().order(ORDER_NAME_ASC).limit(limit).offset(page).run(function(err, teams) {
+                req.models.Team.find().order(ORDER.NAME).limit(limit).offset(page).run(function(err, teams) {
                     if (err) {
                         callback(err);
                         return;
@@ -110,8 +108,8 @@ exports.getAll = function(req, res, next) {
 exports.update = function(req, res, next) {
     var team = req.body.team;
     if (team && team.name && team.id) {
-        var skill = team.skill.split(SKILL_SEPARATOR);
-        if (skill.length == SKILL_LENGTH) {
+        var skill = team.skill.split(TEAM.SPLITTER);
+        if (skill.length == TEAM.LENGTH) {
             req.models.Team.get(team.id, function(err, teamDb) {
                 if (err) {
                     next(new Error("errorrrr pq no definio un team"));

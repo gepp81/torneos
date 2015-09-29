@@ -1,19 +1,11 @@
-var LIMIT = 20;
-var TEAM = "team";
-var ORDER_NAME_ASC = 'name';
-var ORDER_NUMBER_ASC = 'number';
-var ORDER_ID_DESC = '-id';
-var ORDER_COUNT_DESC = '-count';
 var RoundFactory = require("./factory/round.js");
 var async = require('async');
 var orm = require('orm');
-var _ = require('underscore');
 var PROPERTIES = require('./properties.js');
-var STATUS = PROPERTIES.STATUS;
-
-var EDITION_LEAGUE = "LEAGUE";
-var EDITION_CUP = "CUP";
-
+var STATUS = PROPERTIES.STATUS,
+    ORDER = PROPERTIES.ORDER,
+    QUERY = PROPERTIES.QUERY,
+    EDITION = PROPERTIES.EDITION;
 
 /**
  * Crea un nuevo torneo
@@ -61,7 +53,7 @@ exports.getAll = function(req, res, next) {
             }
             res.status(200).send(tournaments);
         });*/
-    req.models.Tournament.find().order(ORDER_NAME_ASC).run(function(err, tournaments) {
+    req.models.Tournament.find().order(ORDER.NAME).run(function(err, tournaments) {
         if (err) {
             next(err);
         } else {
@@ -78,10 +70,10 @@ exports.getAllPage = function(req, res, next) {
     if (req.params.page) {
         page = req.params.page;
     }
-    page = (page - 1) * LIMIT;
+    page = (page - 1) * QUERY.LIMIT_20;
     async.parallel({
         tournaments: function(callback) {
-            req.models.Tournament.find().order(ORDER_NAME_ASC).limit(LIMIT).offset(page).run(function(err, tournaments) {
+            req.models.Tournament.find().order(ORDER.NAME).limit(QUERY.LIMIT_20).offset(page).run(function(err, tournaments) {
                 if (err) {
                     callback(err);
                 } else {
@@ -196,7 +188,7 @@ function createNewPosition(req, editionDb) {
             goals: 0,
             received: 0
         }
-        if (editionDb.type === EDITION_CUP) {
+        if (editionDb.type === EDITION.CUP) {
             position.final = length;
         }
         req.models.Position.create(position, function(err, positionDb) {});
@@ -207,10 +199,10 @@ function createNewPosition(req, editionDb) {
  * Crea una edicion para un torneo dado
  */
 function createLeagueEdition(edition, req, res, next, tournamentDb) {
-    if (edition.type === EDITION_LEAGUE) {
+    if (edition.type === EDITION.LEAGUE) {
         edition.size = req.body.double ? (edition.teams.length - 1) * 2 : (edition.teams.length - 1);
     }
-    if (edition.type === EDITION_CUP) {
+    if (edition.type === EDITION.CUP) {
         var count = 1;
         while (Math.pow(2, count) < edition.teams.length) {
             count++;
@@ -270,7 +262,7 @@ exports.addEdition = function(req, res, next) {
 exports.getEditions = function(req, res, next) {
     req.models.Edition.find({
         league: req.params.tournament
-    }).order(ORDER_ID_DESC).run(function(err, editions) {
+    }).order(ORDER.ID_DESC).run(function(err, editions) {
         if (err) {
             next(err);
         } else {
@@ -301,7 +293,7 @@ exports.getLastEdition = function(req, res, next) {
 exports.getFixture = function(req, res, next) {
     req.models.Round.find({
         edition: req.params.edition
-    }).order(ORDER_NUMBER_ASC).run(function(err, rounds) {
+    }).order(ORDER.NUMBER).run(function(err, rounds) {
         if (err) {
             next(err);
         } else {
@@ -330,10 +322,9 @@ exports.championByTour = function(req, res, next) {
  * Devuelve los campeones y sus títulos.
  */
 exports.champions = function(req, res, next) {
-
     req.models.db.driver.execQuery("SELECT position.team, count(*) AS total, " +
         "sum(if(tour.type = 'c', 1, 0)) AS c, sum(if(tour.type = 'a', 1, 0)) AS a," +
-        "sum(if(tour.type = 'b', 1, 0)) AS b, sum(if(tour.type = 'i', 1, 0)) AS i " +                                   
+        "sum(if(tour.type = 'b', 1, 0)) AS b, sum(if(tour.type = 'i', 1, 0)) AS i " +
         "FROM position INNER JOIN edition edi ON position.edition = edi.id " +
         "INNER JOIN tournament tour ON edi.league = tour.id WHERE final = 1 " +
         "AND edi.status = ? GROUP BY position.team ORDER BY i DESC, a DESC, c DESC, b DESC, total DESC", [STATUS.FINALIZED],

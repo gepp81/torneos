@@ -20,6 +20,7 @@
     "ngstorage": "^0.3.6",
     "node-inspector": "^0.12.2",
     "orm": "~2.1.26",
-    "serve-favicon": "~2.2.1"
+    "serve-favicon": "~2.2.1",
+    "underscore": "1.8.3"
   }
 }
